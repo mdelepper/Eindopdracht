@@ -13,10 +13,12 @@ def tokenize(string):
             tokenstring.append(' %s ' % c)
         else:
             tokenstring.append(c)
+    
     tokenstring = ''.join(tokenstring)
+    
     #split on spaces - this gives us our tokens
     tokens = tokenstring.split()
-    
+     
     #special casing for **:
     ans = []
     for t in tokens:
@@ -25,6 +27,8 @@ def tokenize(string):
         else:
             ans.append(t)
     return ans
+
+
     
 # check if a string represents a numeric value
 def isnumber(string):
@@ -34,6 +38,7 @@ def isnumber(string):
     except ValueError:
         return False
 
+
 # check if a string represents an integer value        
 def isint(string):
     try:
@@ -41,6 +46,13 @@ def isint(string):
         return True
     except ValueError:
         return False
+        
+ # making a difference between add/sub and mul/div
+def precedence(token):
+    if token == '+' or token == '-':
+        return(1)
+    elif token == '*' or token == '/':
+        return(2)
 
 class Expression():
     """A mathematical expression, represented as an expression tree"""
@@ -56,8 +68,20 @@ class Expression():
     # this allows us to perform 'arithmetic' with expressions, and obtain another expression
     def __add__(self, other):
         return AddNode(self, other)
+    
+    def __sub__(self, other):
+        return SubstractNode(self, other)
         
+    def __mul__(self, other):
+        return MultiplyNode(self,other)
+    
+    def __truediv__(self, other):
+        return DivideNode(self, other)
+        
+       
     # TODO: other overloads, such as __sub__, __mul__, etc.
+    
+    
     
     # basic Shunting-yard algorithm
     def fromString(string):
@@ -71,7 +95,9 @@ class Expression():
         output = []
         
         # list of operators
-        oplist = ['+']
+        oplist = ['+','-','*','/']
+        
+       
         
         for token in tokens:
             if isnumber(token):
@@ -85,7 +111,7 @@ class Expression():
                 while True:
                     # TODO: when there are more operators, the rules are more complicated
                     # look up the shunting yard-algorithm
-                    if len(stack) == 0 or stack[-1] not in oplist:
+                    if len(stack) == 0 or stack[-1] not in oplist or int(precedence(token)) > int(precedence(stack[-1])):
                         break
                     output.append(stack.pop())
                 # push the new operator onto the stack
@@ -120,6 +146,9 @@ class Expression():
                 stack.append(t)
         # the resulting expression tree is what's left on the stack
         return stack[0]
+        
+    
+
     
 class Constant(Expression):
     """Represents a constant value"""
@@ -169,5 +198,22 @@ class AddNode(BinaryNode):
     """Represents the addition operator"""
     def __init__(self, lhs, rhs):
         super(AddNode, self).__init__(lhs, rhs, '+')
+
+class SubstractNode(BinaryNode):
+    """Represents the substraction operator"""
+    def __init__(self, lhs, rhs):
+        super(SubstractNode, self).__init__(lhs, rhs, '-')
+        
+class MultiplyNode(BinaryNode):
+    """Represents the multiplication operator"""
+    def __init__(self, lhs, rhs):
+        super(MultiplyNode, self).__init__(lhs, rhs, '*')
+
+class DivideNode(BinaryNode):
+    """Represents the division operator"""
+    def __init__(self, lhs, rhs):
+        super(DivideNode, self).__init__(lhs, rhs, '/')
         
 # TODO: add more subclasses of Expression to represent operators, variables, functions, etc.
+
+
