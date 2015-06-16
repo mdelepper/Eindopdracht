@@ -77,10 +77,6 @@ class Expression():
     
     def __truediv__(self, other):
         return DivideNode(self, other)
-        
-       
-    # TODO: other overloads, such as __sub__, __mul__, etc.
-    
     
     
     # basic Shunting-yard algorithm
@@ -146,6 +142,14 @@ class Expression():
                 stack.append(t)
         # the resulting expression tree is what's left on the stack
         return stack[0]
+
+
+
+    #evaluates the expression recursively ????
+    def evaluate(self, expression_to_evaluate = None):
+
+        print(evaluate)
+        
         
     
 
@@ -170,6 +174,10 @@ class Constant(Expression):
         
     def __float__(self):
         return float(self.value)
+
+    #evaluates the Constant, i.e. returns the Constant as a float
+    def evaluate(self):
+        return float(self)
         
 class BinaryNode(Expression):
     """A node in the expression tree representing a binary operator."""
@@ -193,6 +201,33 @@ class BinaryNode(Expression):
         
         # TODO: do we always need parantheses?
         return "(%s %s %s)" % (lstring, self.op_symbol, rstring)
+
+    def evaluate(self, expression_to_evaluate = None):
+        operator = self.op_symbol
+        f = self.lhs.evaluate()
+        g = self.rhs.evaluate()
+        return eval('f' + operator + 'g')
+
+
+
+
+    
+
+class Variable(Expression):
+    """represent a variable"""
+    
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return self.value
+
+    #evaluates the Variable and returns the expression with an evaluated Variable
+##    def evaluate(self, expression_to_evaluate = None):
+##        f = lambda self: expression_to_evaluate
+##        return f
+
+    
         
 class AddNode(BinaryNode):
     """Represents the addition operator"""
