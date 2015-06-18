@@ -145,14 +145,13 @@ class Expression():
 
 
 
-    #evaluates the expression recursively ????
-    def evaluate(self, expression_to_evaluate = None):
+    #We use a pass because the expression is evaluated in the subclasses
+    #of expression, where we override this method
+    def evaluate(self, expression_to_evaluate = dict()):
+        pass
 
-        print(evaluate)
-        
-        
+
     
-
     
 class Constant(Expression):
     """Represents a constant value"""
@@ -176,7 +175,7 @@ class Constant(Expression):
         return float(self.value)
 
     #evaluates the Constant, i.e. returns the Constant as a float
-    def evaluate(self):
+    def evaluate(self, expression_to_evaluate = dict()):
         return float(self)
         
 class BinaryNode(Expression):
@@ -202,18 +201,28 @@ class BinaryNode(Expression):
         # TODO: do we always need parantheses?
         return "(%s %s %s)" % (lstring, self.op_symbol, rstring)
 
-    def evaluate(self, expression_to_evaluate = None):
+    #A BinaryNode always has a lhs and a rhs which needs to be evaluated
+    #this method evaluates the lhs and rhs recursively untill it reaches
+    #a function which can be evaluated. I.e. untill it has reaches a leaf.
+    def evaluate(self, expression_to_evaluate = dict()):
         operator = self.op_symbol
-        f = self.lhs.evaluate()
-        g = self.rhs.evaluate()
-        return eval('f' + operator + 'g')
+        f = self.lhs.evaluate(expression_to_evaluate)
+        g = self.rhs.evaluate(expression_to_evaluate)
 
 
+        #If no value is given for a Variable, we want to return it as a Variable
+        #hence we have to distinguish if lhs or rhs is still a variable
+        if type(f) == str:
+            expr = f +' '+ str(operator)+' '+ str(g)
+            return expr
+        if type(g) == str:
+            expr = str(f)+ ' '+str(operator) +' '+ g
+            return expr
+        else:
+            return eval('f' + operator + 'g')
+   
 
-
-    
-
-class Variable(Expression):
+class Variable(Constant):
     """represent a variable"""
     
     def __init__(self, value):
@@ -222,11 +231,14 @@ class Variable(Expression):
     def __str__(self):
         return self.value
 
-    #evaluates the Variable and returns the expression with an evaluated Variable
-##    def evaluate(self, expression_to_evaluate = None):
-##        f = lambda self: expression_to_evaluate
-##        return f
-
+    #If there is a value given for the Variable when evaluating, this method
+    #returns the evaluated value of the Variable. If no value is given for
+    #the Variable, the method returns the Variable itself.
+    def evaluate(self, expression_to_evaluate = dict()):
+        if self.value in expression_to_evaluate:
+            return expression_to_evaluate[self.value]
+        else:
+            return self.value
     
         
 class AddNode(BinaryNode):
