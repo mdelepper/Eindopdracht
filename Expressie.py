@@ -47,12 +47,25 @@ def isint(string):
     except ValueError:
         return False
         
- # making a difference between add/sub and mul/div
+# making a difference between precedence add/sub, mul/div, pow
+# Needed for translating to RPN
+# Needed for minimal use of brackets when printing our final expression
 def precedence(token):
     if token == '+' or token == '-':
         return(1)
     elif token == '*' or token == '/':
         return(2)
+    elif token == '**':
+        return(3)
+    else:
+        return(0)
+# checking wether a token is associative or not   
+# Needed for mininmal use of brackets when printing our final expression
+def associativity(token):
+    if token == '+' or token == '*':
+        return(1)
+    if token == '-' or token == '/':
+        return(0)
 
 class Expression():
     """A mathematical expression, represented as an expression tree"""
@@ -78,6 +91,9 @@ class Expression():
     def __truediv__(self, other):
         return DivideNode(self, other)
         
+    def __pow__(self, other):
+        return PowerNode(self, other)
+        
        
     # TODO: other overloads, such as __sub__, __mul__, etc.
     
@@ -95,7 +111,7 @@ class Expression():
         output = []
         
         # list of operators
-        oplist = ['+','-','*','/']
+        oplist = ['+','-','*','/','**']
         
        
         
@@ -188,11 +204,48 @@ class BinaryNode(Expression):
             return False
             
     def __str__(self):
-        lstring = str(self.lhs)
-        rstring = str(self.rhs)
+        """Printing our final expression while determining when we need brackets"""
         
-        # TODO: do we always need parantheses?
-        return "(%s %s %s)" % (lstring, self.op_symbol, rstring)
+        def left_result(self):
+        #Do we need brackets on the left hand side?
+            lstring = str(self.lhs)
+            left_res = ''
+        
+            if isinstance (self.lhs, BinaryNode):
+                #Defining when the precedence of operators tells us to use brackets on the left hand side
+                left_prec = precedence(self.lhs.op_symbol)<precedence(self.op_symbol)
+                if left_prec:
+                    left_res += "(%s) %s" % (lstring, self.op_symbol)
+                else:
+                    left_res += "%s %s" % (lstring, self.op_symbol)
+            else:
+                left_res += "%s %s" % (lstring, self.op_symbol)
+            
+            return left_res
+        
+        def right_result(self):
+        #Do we need brackets on the right hand side?
+            rstring = str(self.rhs)
+            right_res = ''
+        
+            if isinstance (self.rhs, BinaryNode):
+                #Defining when the precedence of operators tells us to use brackets on the right hand side
+                right_prec = precedence(self.rhs.op_symbol)<precedence(self.op_symbol)
+                #Defining when the associativity of operators tells us to use brackets on the right hand side
+                right_ass = precedence(self.rhs.op_symbol)==precedence(self.op_symbol) and associativity(self.rhs.op_symbol)>associativity(self.op_symbol)
+        
+                if right_prec or right_ass:
+                    right_res+= " (%s)" % (rstring)
+                else:
+                    right_res+= " %s" % (rstring)
+            else:
+                right_res+= " %s" % (rstring)
+            
+            return right_res
+    
+        #And now the total result
+        return str(left_result(self))+str(right_result(self))
+            
         
 class AddNode(BinaryNode):
     """Represents the addition operator"""
@@ -214,6 +267,9 @@ class DivideNode(BinaryNode):
     def __init__(self, lhs, rhs):
         super(DivideNode, self).__init__(lhs, rhs, '/')
         
+class PowerNode(BinaryNode):
+    """Represents the power operator"""
+    def __init__(self, lhs, rhs):
+        super(PowerNode, self).__init__(lhs, rhs, '**')
+        
 # TODO: add more subclasses of Expression to represent operators, variables, functions, etc.
-
-
