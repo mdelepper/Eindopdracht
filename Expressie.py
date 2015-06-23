@@ -104,6 +104,7 @@ class Expression():
     def __pow__(self, other):
         return PowerNode(self, other)
         
+
     
     # basic Shunting-yard algorithm
     def fromString(string):
@@ -120,10 +121,11 @@ class Expression():
         oplist = ['+','-','*','/','**']
 
         #list of functions
-        funclist = ['cos', 'sin'] 
+        funclist = ['cos', 'sin', 'log'] 
        
         
         for token in tokens:
+            
             if isnumber(token):
                 # numbers go directly to the output
                 if isint(token):
@@ -151,9 +153,14 @@ class Expression():
                     output.append(stack.pop())
                 # pop the left paranthesis from the stack (but not to the output)
                 stack.pop()
+                # ) will look for a ( and cancel both, if a function is priliminary to those ()
+                # the function is moved to the output, otherwise operators and functions will be wrongly placed to the output
+                # eg sin(x) + 1 wil be evaluated as sin(x+1)
+                if len(stack) > 0 and stack[-1] in funclist:
+                    output.append(stack.pop())                
             # TODO: do we need more kinds of tokens?
             elif token in funclist:
-                #functies naar stack zolang voorwaarden gelden - JFP
+                #functions will be located to the stack (under restrictions) 
                 while True:
                     if len(stack) == 0 or stack[-1] not in funclist:
                         break
@@ -166,7 +173,6 @@ class Expression():
         # pop any tokens still on the stack to the output
         while len(stack) > 0:
             output.append(stack.pop())
-        print(output)
         
         # convert RPN to an actual expression tree
         for t in output:
@@ -175,12 +181,16 @@ class Expression():
                 y = stack.pop()
                 x = stack.pop()
                 stack.append(eval('x %s y' % t))
+            #translocate function from the output to the stack with use of the class of the 
+            #function to ascribe the input to the function    
             elif t in funclist:
                 z = stack.pop()
                 if t == 'sin':
                     stack.append(sinnode(z))
                 elif t == 'cos':
                     stack.append(cosnode(z))
+                elif t == 'log':
+                    stack.append(lognode(z))
             else:
                 # a constant, push it to the stack
                 stack.append(t)
@@ -188,10 +198,6 @@ class Expression():
         return stack[0]
 
 
-    #We use a pass because the expression is evaluated in the subclasses
-    #of expression, where we override this method
-    def __eq__(self, other):
-        pass
 
     #We use a pass because the expression is evaluated in the subclasses
     #of expression, where we override this method
@@ -199,12 +205,12 @@ class Expression():
         pass
 
 
+   
 class Constant(Expression):
     """Represents a constant value"""
     def __init__(self, value):
         self.value = value
-
-    ##This checks whether two childs have the same numerical value    
+        
     def __eq__(self, other):
         if isinstance(other, Constant):
             return self.value == other.value
@@ -234,8 +240,7 @@ class BinaryNode(Expression):
         self.op_symbol = op_symbol
     
     # TODO: what other properties could you need? Precedence, associativity, identity, etc.
-
-    ##This checks whether two childs have the same type             
+            
     def __eq__(self, other):
         if type(self) == type(other):
             return self.lhs == other.lhs and self.rhs == other.rhs
@@ -307,40 +312,47 @@ class BinaryNode(Expression):
         else:
             return eval('f' + operator + 'g')
         
-
+#class for notBinaryNodes in the expressiontree (i.e. functions with input)
 class UnaryNode(Expression):
-    "One incoming node"
+    "Nodes with one incoming edge"
 
+    #only one incoming node (function input)
     def __init__(self, node, function):
         self.node = node
         self.function = function
 
+    #same def as in BinaryNode to control if two trees are the same
     def __eq__(self, other):
         if type(self) == type(other):
             return self.node == other.node
         else:
             return False
 
+    #returs a function f with input x as f(x)
     def __str__(self):
         return self.function+'('+ str(self.node) + ')'
 
+    def evaluate(self, expression_to_evaluate = dict()):
+        fun = self.function
+        h = self.node.evaluate(expression_to_evaluate)
+
+        #If no value is given for a Variable, we want to return it as a Variable
+        #hence we have to distinguish if lhs or rhs is still a variable
+        if type(h) == str:
+            expr = f + '(' + h + ')' 
+            return expr
+        else:
+            return eval( 'math.' + fun + '(' + str(h) + ')' )
+
 
 class Variable(Constant):
-    """represent a variable"""
+    """Represents a variable"""
     
     def __init__(self, value):
         self.value = value
 
     def __str__(self):
         return self.value
-    
-    ##This checks whether two childs use the same variable (e.g. 'x' or 'y')
-    def __eq__(self, other):
-        if isinstance(other, Variable):
-            return self.value == other.value
-        else:
-            return False
-        
 
     #If there is a value given for the Variable when evaluating, this method
     #returns the evaluated value of the Variable. If no value is given for
@@ -378,11 +390,18 @@ class PowerNode(BinaryNode):
         super(PowerNode, self).__init__(lhs, rhs, '**')
 
 class sinnode(UnaryNode):
-    def __init__(self,node):
+    """Represents the math.sin function"""
+    def __init__(self, node):
         super(sinnode, self).__init__(node, 'sin')
 
 class cosnode(UnaryNode):
-    def __init__(self,node):
+    """Represents the math.cos function"""
+    def __init__(self, node):
         super(cosnode, self).__init__(node, 'cos')
+
+class lognode(UnaryNode):
+    """Represents the math.log function"""
+    def __init(self, node):
+        super(lognode, self).__init__(node, 'log')
         
 # TODO: add more subclasses of Expression to represent operators, variables, functions, etc.
