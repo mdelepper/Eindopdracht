@@ -336,5 +336,3 @@ class PowerNode(BinaryNode):
         super(PowerNode, self).__init__(lhs, rhs, '**')
         
 # TODO: add more subclasses of Expression to represent operators, variables, functions, etc.
-expr = Expression.fromString("(5+3)-2**(-2)*6")
-print(expr)
