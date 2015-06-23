@@ -103,7 +103,6 @@ class Expression():
     def __pow__(self, other):
         return PowerNode(self, other)
         
-
     
     # basic Shunting-yard algorithm
     def fromString(string):
@@ -172,6 +171,8 @@ class Expression():
         return stack[0]
 
 
+    def __eq__(self, other):
+        pass
 
     #We use a pass because the expression is evaluated in the subclasses
     #of expression, where we override this method
@@ -179,7 +180,6 @@ class Expression():
         pass
 
 
-   
 class Constant(Expression):
     """Represents a constant value"""
     def __init__(self, value):
@@ -295,6 +295,13 @@ class Variable(Constant):
 
     def __str__(self):
         return self.value
+        
+    def __eq__(self, other):
+        if isinstance(other, Variable):
+            return self.value == other.value
+        else:
+            return False
+        
 
     #If there is a value given for the Variable when evaluating, this method
     #returns the evaluated value of the Variable. If no value is given for
@@ -332,3 +339,8 @@ class PowerNode(BinaryNode):
         super(PowerNode, self).__init__(lhs, rhs, '**')
         
 # TODO: add more subclasses of Expression to represent operators, variables, functions, etc.
+
+expra=Expression.fromString('3+5*y+2')
+exprb=Expression.fromString('3+5*(y+2)')
+
+print(expra==exprb)
