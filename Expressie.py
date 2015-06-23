@@ -103,6 +103,8 @@ class Expression():
         
     def __pow__(self, other):
         return PowerNode(self, other)
+
+#    def herschrijf
         
 
     
@@ -110,6 +112,21 @@ class Expression():
     def fromString(string):
         # split into tokens
         tokens = tokenize(string)
+
+
+        #this makes it possible to make an Expression from String in the form
+        #of ax instead of a*x, where 'a' is a number and 'x' is a variable
+        #this happens iteratively as we also want to be able to handle axy
+        #as a*x*y (or for even more variables)
+        
+        i=0
+        for token in tokens:
+            while type(token) == str and len(token) != 1 and token != '**' :
+                tokens.insert(i+1, '*')
+                tokens.insert(i+2, token[-1])
+                tokens[i] = token[0:-1]
+                token = tokens[i]
+            i = i+1
         
         # stack used by the Shunting-Yard algorithm
         stack = []
@@ -132,8 +149,10 @@ class Expression():
                     output.append(Constant(int(token)))
                 else:
                     output.append(Constant(float(token)))
+                    
             elif isvariable(token):
                 output.append(Variable(str(token)))
+                
             elif token in oplist:
                 # pop operators from the stack to the output until the top is no longer an operator
                 while True:
@@ -144,9 +163,11 @@ class Expression():
                     output.append(stack.pop())
                 # push the new operator onto the stack
                 stack.append(token)
+                
             elif token == '(':
                 # left parantheses go to the stack
                 stack.append(token)
+                
             elif token == ')':
                 # right paranthesis: pop everything upto the last left paranthesis to the output
                 while not stack[-1] == '(':
@@ -362,6 +383,7 @@ class Variable(Constant):
             return expression_to_evaluate[self.value]
         else:
             return self.value
+        #foutmelding nog toevoegen, na versimpelen
     
     
 class AddNode(BinaryNode):
