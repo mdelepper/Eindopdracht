@@ -47,13 +47,13 @@ def isint(string):
     except ValueError:
         return False
 
-"""nog aanpassen, maar expressionfromstring moet ook variabelen kunnen herkennen"""
-##def isvariable(string):
-##    try:
-##        str(string)
-##        return True
-##    except ValueError:
-##        return False
+##check if a string represents a variable
+def isvariable(string):
+    try:
+        if 97 <= ord(string) and ord(string) <= 123:
+            return True
+    except ValueError:
+        return False
         
  # making a difference between add/sub and mul/div
 def precedence(token):
@@ -110,6 +110,8 @@ class Expression():
                     output.append(Constant(int(token)))
                 else:
                     output.append(Constant(float(token)))
+            elif isvariable(token):
+                output.append(Variable(str(token)))                
             elif token in oplist:
                 # pop operators from the stack to the output until the top is no longer an operator
                 while True:
