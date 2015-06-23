@@ -68,6 +68,7 @@ def precedence(token):
         return(3)
     else:
         return(0)
+    
 # checking wether a token is associative or not   
 # Needed for mininmal use of brackets when printing our final expression
 def associativity(token):
@@ -118,7 +119,9 @@ class Expression():
         
         # list of operators
         oplist = ['+','-','*','/','**']
-        
+
+        #list of functions
+        funclist = ['cos', 'sin'] 
        
         
         for token in tokens:
@@ -150,6 +153,13 @@ class Expression():
                 # pop the left paranthesis from the stack (but not to the output)
                 stack.pop()
             # TODO: do we need more kinds of tokens?
+            elif token in funclist:
+                #functies naar stack zolang voorwaarden gelden - JFP
+                while True:
+                    if len(stack) == 0 or stack[-1] not in funclist:
+                        break
+                    output.append(stack.pop())
+                stack.append(token)
             else:
                 # unknown token
                 raise ValueError('Unknown token: %s' % token)
@@ -157,6 +167,7 @@ class Expression():
         # pop any tokens still on the stack to the output
         while len(stack) > 0:
             output.append(stack.pop())
+        print(output)
         
         # convert RPN to an actual expression tree
         for t in output:
@@ -165,6 +176,12 @@ class Expression():
                 y = stack.pop()
                 x = stack.pop()
                 stack.append(eval('x %s y' % t))
+            elif t in funclist:
+                z = stack.pop()
+                if t == 'sin':
+                    stack.append(sinnode(z))
+                elif t == 'cos':
+                    stack.append(cosnode(z))
             else:
                 # a constant, push it to the stack
                 stack.append(t)
@@ -287,6 +304,23 @@ class BinaryNode(Expression):
             return eval('f' + operator + 'g')
         
 
+class UnaryNode(Expression):
+    "One incoming node"
+
+    def __init__(self, node, function):
+        self.node = node
+        self.function = function
+
+    def __eq__(self, other):
+        if type(self) == type(other):
+            return self.node == other.node
+        else:
+            return False
+
+    def __str__(self):
+        return self.function+'('+ str(self.node) + ')'
+
+
 class Variable(Constant):
     """represent a variable"""
     
@@ -330,5 +364,13 @@ class PowerNode(BinaryNode):
     """Represents the power operator"""
     def __init__(self, lhs, rhs):
         super(PowerNode, self).__init__(lhs, rhs, '**')
+
+class sinnode(UnaryNode):
+    def __init__(self,node):
+        super(sinnode, self).__init__(node, 'sin')
+
+class cosnode(UnaryNode):
+    def __init__(self,node):
+        super(cosnode, self).__init__(node, 'cos')
         
 # TODO: add more subclasses of Expression to represent operators, variables, functions, etc.
