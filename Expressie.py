@@ -46,6 +46,14 @@ def isint(string):
         return True
     except ValueError:
         return False
+
+"""nog aanpassen, maar expressionfromstring moet ook variabelen kunnen herkennen"""
+##def isvariable(string):
+##    try:
+##        str(string)
+##        return True
+##    except ValueError:
+##        return False
         
  # making a difference between add/sub and mul/div
 def precedence(token):
@@ -220,7 +228,7 @@ class BinaryNode(Expression):
             return expr
         else:
             return eval('f' + operator + 'g')
-   
+        
 
 class Variable(Constant):
     """represent a variable"""
