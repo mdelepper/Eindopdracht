@@ -171,6 +171,8 @@ class Expression():
         return stack[0]
 
 
+    #We use a pass because the expression is evaluated in the subclasses
+    #of expression, where we override this method
     def __eq__(self, other):
         pass
 
@@ -184,7 +186,8 @@ class Constant(Expression):
     """Represents a constant value"""
     def __init__(self, value):
         self.value = value
-        
+
+    ##This checks whether two childs have the same numerical value    
     def __eq__(self, other):
         if isinstance(other, Constant):
             return self.value == other.value
@@ -214,7 +217,8 @@ class BinaryNode(Expression):
         self.op_symbol = op_symbol
     
     # TODO: what other properties could you need? Precedence, associativity, identity, etc.
-            
+
+    ##This checks whether two childs have the same type             
     def __eq__(self, other):
         if type(self) == type(other):
             return self.lhs == other.lhs and self.rhs == other.rhs
@@ -295,7 +299,8 @@ class Variable(Constant):
 
     def __str__(self):
         return self.value
-        
+    
+    ##This checks whether two childs use the same variable (e.g. 'x' or 'y')
     def __eq__(self, other):
         if isinstance(other, Variable):
             return self.value == other.value
@@ -339,8 +344,3 @@ class PowerNode(BinaryNode):
         super(PowerNode, self).__init__(lhs, rhs, '**')
         
 # TODO: add more subclasses of Expression to represent operators, variables, functions, etc.
-
-expra=Expression.fromString('3+5*y+2')
-exprb=Expression.fromString('3+5*(y+2)')
-
-print(expra==exprb)
