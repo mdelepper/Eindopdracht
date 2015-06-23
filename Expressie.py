@@ -90,6 +90,7 @@ class Expression():
     
     def __truediv__(self, other):
         return DivideNode(self, other)
+
         
     def __pow__(self, other):
         return PowerNode(self, other)
@@ -97,6 +98,7 @@ class Expression():
        
     # TODO: other overloads, such as __sub__, __mul__, etc.
     
+
     
     
     # basic Shunting-yard algorithm
@@ -162,10 +164,16 @@ class Expression():
                 stack.append(t)
         # the resulting expression tree is what's left on the stack
         return stack[0]
-        
-    
 
-    
+
+
+    #We use a pass because the expression is evaluated in the subclasses
+    #of expression, where we override this method
+    def evaluate(self, expression_to_evaluate = dict()):
+        pass
+
+
+   
 class Constant(Expression):
     """Represents a constant value"""
     def __init__(self, value):
@@ -186,6 +194,10 @@ class Constant(Expression):
         
     def __float__(self):
         return float(self.value)
+
+    #evaluates the Constant, i.e. returns the Constant as a float
+    def evaluate(self, expression_to_evaluate = dict()):
+        return float(self)
         
 class BinaryNode(Expression):
     """A node in the expression tree representing a binary operator."""
@@ -234,6 +246,7 @@ class BinaryNode(Expression):
                 #Defining when the associativity of operators tells us to use brackets on the right hand side
                 right_ass = precedence(self.rhs.op_symbol)==precedence(self.op_symbol) and associativity(self.rhs.op_symbol)>associativity(self.op_symbol)
         
+        
                 if right_prec or right_ass:
                     right_res+= " (%s)" % (rstring)
                 else:
@@ -246,7 +259,47 @@ class BinaryNode(Expression):
         #And now the total result
         return str(left_result(self))+str(right_result(self))
             
-        
+
+    #A BinaryNode always has a lhs and a rhs which needs to be evaluated
+    #this method evaluates the lhs and rhs recursively untill it reaches
+    #a function which can be evaluated. I.e. untill it has reaches a leaf.
+    def evaluate(self, expression_to_evaluate = dict()):
+        operator = self.op_symbol
+        f = self.lhs.evaluate(expression_to_evaluate)
+        g = self.rhs.evaluate(expression_to_evaluate)
+
+
+        #If no value is given for a Variable, we want to return it as a Variable
+        #hence we have to distinguish if lhs or rhs is still a variable
+        if type(f) == str:
+            expr = f +' '+ str(operator)+' '+ str(g)
+            return expr
+        if type(g) == str:
+            expr = str(f)+ ' '+str(operator) +' '+ g
+            return expr
+        else:
+            return eval('f' + operator + 'g')
+   
+
+class Variable(Constant):
+    """represent a variable"""
+    
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return self.value
+
+    #If there is a value given for the Variable when evaluating, this method
+    #returns the evaluated value of the Variable. If no value is given for
+    #the Variable, the method returns the Variable itself.
+    def evaluate(self, expression_to_evaluate = dict()):
+        if self.value in expression_to_evaluate:
+            return expression_to_evaluate[self.value]
+        else:
+            return self.value
+    
+    
 class AddNode(BinaryNode):
     """Represents the addition operator"""
     def __init__(self, lhs, rhs):
@@ -273,3 +326,5 @@ class PowerNode(BinaryNode):
         super(PowerNode, self).__init__(lhs, rhs, '**')
         
 # TODO: add more subclasses of Expression to represent operators, variables, functions, etc.
+expr = Expression.fromString("(5+3)-2**(-2)*6")
+print(expr)
