@@ -50,8 +50,9 @@ def isint(string):
 ##check if a string represents a variable
 def isvariable(string):
     try:
-        if 97 <= ord(string) and ord(string) <= 123:
-            return True
+        if len(string) == 1:
+            if 97 <= ord(string) and ord(string) <= 123:
+                return True
     except ValueError:
         return False
         
@@ -98,16 +99,11 @@ class Expression():
     
     def __truediv__(self, other):
         return DivideNode(self, other)
-
         
     def __pow__(self, other):
         return PowerNode(self, other)
         
-       
-    # TODO: other overloads, such as __sub__, __mul__, etc.
-    
 
-    
     
     # basic Shunting-yard algorithm
     def fromString(string):
@@ -133,7 +129,7 @@ class Expression():
                 else:
                     output.append(Constant(float(token)))
             elif isvariable(token):
-                output.append(Variable(str(token)))                
+                output.append(Variable(str(token)))
             elif token in oplist:
                 # pop operators from the stack to the output until the top is no longer an operator
                 while True:
