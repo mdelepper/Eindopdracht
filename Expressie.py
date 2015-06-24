@@ -69,6 +69,7 @@ def precedence(token):
         return(3)
     else:
         return(0)
+    
 # checking wether a token is associative or not   
 # Needed for mininmal use of brackets when printing our final expression
 def associativity(token):
@@ -104,12 +105,32 @@ class Expression():
     def __pow__(self, other):
         return PowerNode(self, other)
 
+<<<<<<< HEAD
+=======
+#    def herschrijf
+        
+>>>>>>> 926bd26eb72b32a108443bb5c07c6b63a06fe85c
 
     
     # basic Shunting-yard algorithm
     def fromString(string):
         # split into tokens
         tokens = tokenize(string)
+
+
+        #this makes it possible to make an Expression from String in the form
+        #of ax instead of a*x, where 'a' is a number and 'x' is a variable
+        #this happens iteratively as we also want to be able to handle axy
+        #as a*x*y (or for even more variables)
+        
+        i=0
+        for token in tokens:
+            while type(token) == str and len(token) != 1 and token != '**' :
+                tokens.insert(i+1, '*')
+                tokens.insert(i+2, token[-1])
+                tokens[i] = token[0:-1]
+                token = tokens[i]
+            i = i+1
         
         # stack used by the Shunting-Yard algorithm
         stack = []
@@ -119,18 +140,23 @@ class Expression():
         
         # list of operators
         oplist = ['+','-','*','/','**']
-        
+
+        #list of functions
+        funclist = ['cos', 'sin', 'log'] 
        
         
         for token in tokens:
+            
             if isnumber(token):
                 # numbers go directly to the output
                 if isint(token):
                     output.append(Constant(int(token)))
                 else:
                     output.append(Constant(float(token)))
+                    
             elif isvariable(token):
                 output.append(Variable(str(token)))
+                
             elif token in oplist:
                 # pop operators from the stack to the output until the top is no longer an operator
                 while True:
@@ -141,16 +167,30 @@ class Expression():
                     output.append(stack.pop())
                 # push the new operator onto the stack
                 stack.append(token)
+                
             elif token == '(':
                 # left parantheses go to the stack
                 stack.append(token)
+                
             elif token == ')':
                 # right paranthesis: pop everything upto the last left paranthesis to the output
                 while not stack[-1] == '(':
                     output.append(stack.pop())
                 # pop the left paranthesis from the stack (but not to the output)
                 stack.pop()
+                # ) will look for a ( and cancel both, if a function is priliminary to those ()
+                # the function is moved to the output, otherwise operators and functions will be wrongly placed to the output
+                # eg sin(x) + 1 wil be evaluated as sin(x+1)
+                if len(stack) > 0 and stack[-1] in funclist:
+                    output.append(stack.pop())                
             # TODO: do we need more kinds of tokens?
+            elif token in funclist:
+                #functions will be located to the stack (under restrictions) 
+                while True:
+                    if len(stack) == 0 or stack[-1] not in funclist:
+                        break
+                    output.append(stack.pop())
+                stack.append(token)
             else:
                 # unknown token
                 raise ValueError('Unknown token: %s' % token)
@@ -166,6 +206,16 @@ class Expression():
                 y = stack.pop()
                 x = stack.pop()
                 stack.append(eval('x %s y' % t))
+            #translocate function from the output to the stack with use of the class of the 
+            #function to ascribe the input to the function    
+            elif t in funclist:
+                z = stack.pop()
+                if t == 'sin':
+                    stack.append(sinnode(z))
+                elif t == 'cos':
+                    stack.append(cosnode(z))
+                elif t == 'log':
+                    stack.append(lognode(z))
             else:
                 # a constant, push it to the stack
                 stack.append(t)
@@ -173,8 +223,6 @@ class Expression():
         return stack[0]
 
 
-    def __eq__(self, other):
-        pass
 
     #We use a pass because the expression is evaluated in the subclasses
     #of expression, where we override this method
@@ -182,6 +230,7 @@ class Expression():
         pass
 
 
+   
 class Constant(Expression):
     """Represents a constant value"""
     def __init__(self, value):
@@ -330,22 +379,47 @@ class BinaryNode(Expression):
         else:
             return eval('f' + operator + 'g')
         
+#class for notBinaryNodes in the expressiontree (i.e. functions with input)
+class UnaryNode(Expression):
+    "Nodes with one incoming edge"
+
+    #only one incoming node (function input)
+    def __init__(self, node, function):
+        self.node = node
+        self.function = function
+
+    #same def as in BinaryNode to control if two trees are the same
+    def __eq__(self, other):
+        if type(self) == type(other):
+            return self.node == other.node
+        else:
+            return False
+
+    #returs a function f with input x as f(x)
+    def __str__(self):
+        return self.function+'('+ str(self.node) + ')'
+
+    def evaluate(self, expression_to_evaluate = dict()):
+        fun = self.function
+        h = self.node.evaluate(expression_to_evaluate)
+
+        #If no value is given for a Variable, we want to return it as a Variable
+        #hence we have to distinguish if lhs or rhs is still a variable
+        if type(h) == str:
+            expr = f + '(' + h + ')' 
+            return expr
+        else:
+            return eval( 'math.' + fun + '(' + str(h) + ')' )
+
 
 class Variable(Constant):
-    """represent a variable"""
+    """Represents a variable"""
     
     def __init__(self, value):
         self.value = value
 
     def __str__(self):
         return self.value
-        
-    def __eq__(self, other):
-        if isinstance(other, Variable):
-            return self.value == other.value
-        else:
-            return False
-        
 
     #If there is a value given for the Variable when evaluating, this method
     #returns the evaluated value of the Variable. If no value is given for
@@ -355,6 +429,7 @@ class Variable(Constant):
             return expression_to_evaluate[self.value]
         else:
             return self.value
+        #foutmelding nog toevoegen, na versimpelen
     
     
 class AddNode(BinaryNode):
@@ -381,9 +456,26 @@ class PowerNode(BinaryNode):
     """Represents the power operator"""
     def __init__(self, lhs, rhs):
         super(PowerNode, self).__init__(lhs, rhs, '**')
-        
-# TODO: add more subclasses of Expression to represent operators, variables, functions, etc.
 
+<<<<<<< HEAD
 a = Expression.fromString('(3+2)*(4+5)*(3+8)*5')
 
 print(a.simplify())
+=======
+class sinnode(UnaryNode):
+    """Represents the math.sin function"""
+    def __init__(self, node):
+        super(sinnode, self).__init__(node, 'sin')
+
+class cosnode(UnaryNode):
+    """Represents the math.cos function"""
+    def __init__(self, node):
+        super(cosnode, self).__init__(node, 'cos')
+
+class lognode(UnaryNode):
+    """Represents the math.log function"""
+    def __init(self, node):
+        super(lognode, self).__init__(node, 'log')
+        
+# TODO: add more subclasses of Expression to represent operators, variables, functions, etc.
+>>>>>>> 926bd26eb72b32a108443bb5c07c6b63a06fe85c
