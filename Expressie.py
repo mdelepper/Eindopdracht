@@ -55,6 +55,7 @@ def isvariable(string):
                 return True
     except ValueError:
         return False
+
         
 # making a difference between precedence add/sub, mul/div, pow
 # Needed for translating to RPN
@@ -102,7 +103,8 @@ class Expression():
         
     def __pow__(self, other):
         return PowerNode(self, other)
-        
+
+
     
     # basic Shunting-yard algorithm
     def fromString(string):
@@ -220,6 +222,46 @@ class BinaryNode(Expression):
             return self.lhs == other.lhs and self.rhs == other.rhs
         else:
             return False
+    
+    #We want to simplify our Expression tree, such that evaluating is extra easy
+    #We want a tree that has the operators of highest precedence at the bottom and operators of lower precedence above
+    def simplify(self):
+        
+        #first simplify the left hand side
+        def simplify_left(self):
+            left = self.lhs
+            operator = self.op_symbol
+            #when we are dealing with a subtree in the left node
+            if isinstance(left, BinaryNode):
+                #we only want to simplify the expression when the operator above is of higher precedence than the operator below
+                if precedence(operator)>precedence(left.op_symbol):
+                    left_side = BinaryNode(left.lhs,self.rhs,self.op_symbol)
+                    right_side = BinaryNode(left.rhs,self.rhs,self.op_symbol)
+                    new_operator = left.op_symbol
+                    #We have to simplify our outcome again, until everything is simplified
+                    return BinaryNode(left_side.simplify(),right_side.simplify(),new_operator)
+                else:
+                    return self
+            else:
+                return self
+        
+        #now we simplify the right hand side. The method is exactly the same        
+        def simplify_right(self):
+            right = self.rhs
+            operator = self.op_symbol
+            if isinstance(right, BinaryNode):
+                if precedence(operator)>precedence(right.op_symbol):
+                    left_side = BinaryNode(self.lhs,right.lhs,self.op_symbol)
+                    right_side = BinaryNode(self.lhs,right.rhs,self.op_symbol)
+                    new_operator= right.op_symbol
+                    return BinaryNode(left_side.simplify(),right_side.simplify(),new_operator)
+                else:
+                    return self
+            else:
+                return self
+        
+        #We obtain our final result by first simplifying the left hand side and then simplifying the right hand side
+        return(simplify_right(simplify_left(self)))
             
     def __str__(self):
         """Printing our final expression while determining when we need brackets"""
@@ -278,9 +320,11 @@ class BinaryNode(Expression):
         #If no value is given for a Variable, we want to return it as a Variable
         #hence we have to distinguish if lhs or rhs is still a variable
         if type(f) == str:
+            print(f)
             expr = f +' '+ str(operator)+' '+ str(g)
             return expr
         if type(g) == str:
+           
             expr = str(f)+ ' '+str(operator) +' '+ g
             return expr
         else:
@@ -340,7 +384,6 @@ class PowerNode(BinaryNode):
         
 # TODO: add more subclasses of Expression to represent operators, variables, functions, etc.
 
-expra=Expression.fromString('3+5*y+2')
-exprb=Expression.fromString('3+5*(y+2)')
+a = Expression.fromString('(3+2)*(4+5)*(3+8)*5')
 
-print(expra==exprb)
+print(a.simplify())
