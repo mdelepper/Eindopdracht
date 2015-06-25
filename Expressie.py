@@ -4,7 +4,6 @@ import math
 # returns a list of numbers, operators, parantheses and commas
 # output will not contain spaces
 def tokenize(string):
-    print(string)
     splitchars = list("+-*/(),")
 
     # surround any splitchar by spaces
@@ -160,7 +159,6 @@ class Expression():
 
         
         for token in tokens:
-            print(tokens)
             if isnumber(token):
                 # numbers go directly to the output
                 if isint(token):
@@ -496,10 +494,10 @@ class tanNode(UnaryNode):
 
 class logNode(UnaryNode):
     """Represents the math.log function"""
-<<<<<<< HEAD
+
     def __init(self, node):
         super(lognode, self).__init__(node, 'log')
-=======
+
     def __init__(self, node):
         super(logNode, self).__init__(node, 'log')
 
@@ -517,6 +515,5 @@ class tanhNode(UnaryNode):
     """Represents the math.tanh function"""
     def __init__(self, node):
         super(tanhNode, self).__init__(node, 'tanh')
->>>>>>> f892e257d55a1d20df6a5a6a0046804d60683685
         
 # TODO: add more subclasses of Expression to represent operators, variables, functions, etc.
