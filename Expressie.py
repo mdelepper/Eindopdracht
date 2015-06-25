@@ -27,6 +27,9 @@ def tokenize(string):
         else:
             ans.append(t)
     return ans
+    
+    #special casting for negative numbers (so, numbers starting with -):
+    
 
 
     
@@ -55,6 +58,13 @@ def isvariable(string):
                 return True
     except ValueError:
         return False
+
+def infunclist(string, funclist):
+    for func in funclist:
+        if func in string:
+            return [func, string.index(func)]
+    return False
+
         
 # making a difference between precedence add/sub, mul/div, pow
 # Needed for translating to RPN
@@ -103,29 +113,13 @@ class Expression():
         
     def __pow__(self, other):
         return PowerNode(self, other)
-
+        
+    
     # basic Shunting-yard algorithm
     def fromString(string):
         # split into tokens
         tokens = tokenize(string)
-
-"""aanpassen nog voor sinus en cosinus en alles!!!"""
-        #this makes it possible to make an Expression from String in the form
-        #of ax instead of a*x, where 'a' is a number and 'x' is a variable
-        #this happens iteratively as we also want to be able to handle axy
-        #as a*x*y (or for even more variables)
-        
-        i=0
-        for token in tokens:
-            while type(token) == str and len(token) != 1 and token != '**'
-            """ and not(token in oplist)
-            and not(deel van token in funclist)""":
-                tokens.insert(i+1, '*')
-                tokens.insert(i+2, token[-1])
-                tokens[i] = token[0:-1]
-                token = tokens[i]
-            i = i+1
-        
+        print(tokens)
         # stack used by the Shunting-Yard algorithm
         stack = []
         # output of the algorithm: a list representing the formula in RPN
@@ -136,8 +130,34 @@ class Expression():
         oplist = ['+','-','*','/','**']
 
         #list of functions
-        funclist = ['cos', 'sin', 'log'] 
-       
+        funclist = ['cos', 'sin', 'log']
+
+
+        #is momenteel nog een lelijk stukje code, maar het werkt!
+        #dit maakt het mogelijk om functies in te voeren zonder '*'-tekens
+        #tussen getallen en variabelen en functies
+        i = 0
+        for token in tokens:
+            while type(token) == str and len(token) != 1 \
+                  and token != '**' and not isnumber(token):
+
+                plaats = infunclist(token, funclist)
+                if type(plaats) == list and not type(plaats) == bool:
+                    if plaats[1] == 0:
+                        break
+                    function_in_token = plaats[0]
+                    index_from_function = int(plaats[1])
+
+                    tokens[i] = token[0:index_from_function]
+                    tokens.insert(i+1, '*')
+                    tokens.insert(i+2, function_in_token)
+                    token = tokens[i]
+                else:
+                    tokens.insert(i+1, '*')
+                    tokens.insert(i+2, token[-1])
+                    tokens[i] = token[0:-1]
+                    token = tokens[i]
+            i += 1
         
         for token in tokens:
             
@@ -265,6 +285,46 @@ class BinaryNode(Expression):
             return self.lhs == other.lhs and self.rhs == other.rhs
         else:
             return False
+    
+    #We want to simplify our Expression tree, such that evaluating is extra easy
+    #We want a tree that has the operators of highest precedence at the bottom and operators of lower precedence above
+    def simplify(self):
+        
+        #first simplify the left hand side
+        def simplify_left(self):
+            left = self.lhs
+            operator = self.op_symbol
+            #when we are dealing with a subtree in the left node
+            if isinstance(left, BinaryNode):
+                #we only want to simplify the expression when the operator above is of higher precedence than the operator below
+                if precedence(operator) == precedence(left.op_symbol) + 1:
+                    left_side = BinaryNode(left.lhs,self.rhs,self.op_symbol)
+                    right_side = BinaryNode(left.rhs,self.rhs,self.op_symbol)
+                    new_operator = left.op_symbol
+                    #We have to simplify our outcome again, until everything is simplified
+                    return BinaryNode(left_side.simplify(),right_side.simplify(),new_operator)
+                else:
+                    return self
+            else:
+                return self
+        
+        #now we simplify the right hand side. The method is exactly the same        
+        def simplify_right(self):
+            right = self.rhs
+            operator = self.op_symbol
+            if isinstance(right, BinaryNode):
+                if precedence(operator) == precedence(right.op_symbol) + 1:
+                    left_side = BinaryNode(self.lhs,right.lhs,self.op_symbol)
+                    right_side = BinaryNode(self.lhs,right.rhs,self.op_symbol)
+                    new_operator= right.op_symbol
+                    return BinaryNode(left_side.simplify(),right_side.simplify(),new_operator)
+                else:
+                    return self
+            else:
+                return self
+        
+        #We obtain our final result by first simplifying the left hand side and then simplifying the right hand side
+        return(simplify_right(simplify_left(self)))
             
     def __str__(self):
         """Printing our final expression while determining when we need brackets"""
@@ -323,9 +383,11 @@ class BinaryNode(Expression):
         #If no value is given for a Variable, we want to return it as a Variable
         #hence we have to distinguish if lhs or rhs is still a variable
         if type(f) == str:
+            print(f)
             expr = f +' '+ str(operator)+' '+ str(g)
             return expr
         if type(g) == str:
+           
             expr = str(f)+ ' '+str(operator) +' '+ g
             return expr
         else:
@@ -347,7 +409,7 @@ class UnaryNode(Expression):
         else:
             return False
 
-    #returs a function f with input x as f(x)
+    #returns a function f with input x as f(x)
     def __str__(self):
         return self.function+'('+ str(self.node) + ')'
 
