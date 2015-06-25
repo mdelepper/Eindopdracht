@@ -4,7 +4,6 @@ import math
 # returns a list of numbers, operators, parantheses and commas
 # output will not contain spaces
 def tokenize(string):
-    print(string)
     splitchars = list("+-*/(),")
 
     # surround any splitchar by spaces
@@ -19,7 +18,6 @@ def tokenize(string):
     
     #split on spaces - this gives us our tokens
     tokens = tokenstring.split()
-    print(tokens) 
     #special casing for **:
     ans = []
     for t in tokens:
@@ -30,7 +28,33 @@ def tokenize(string):
     return ans
     
     #special casting for negative numbers (so, numbers starting with -):
-    
+
+def post_tokenize(tokens, funclist):
+    i = 0
+    for token in tokens:
+        while type(token) == str and len(token) != 1 \
+              and token != '**' and not isnumber(token):
+            plaats = infunclist(token, funclist)
+            if type(plaats) == list and not type(plaats) == bool:
+                if plaats[1] == 0:
+                    break
+                function_in_token = plaats[0]
+                index_from_function = int(plaats[1])
+
+                tokens[i] = token[0:index_from_function]
+                tokens.insert(i+1, '*')
+                tokens.insert(i+2, function_in_token)
+                token = tokens[i]
+
+            else:
+                tokens.insert(i+1, '*')
+                tokens.insert(i+2, token[-1])
+                tokens[i] = token[0:-1]
+                token = tokens[i]
+        i += 1
+    print(tokens)
+    return tokens
+
     
 # check if a string represents a numeric value
 def isnumber(string):
@@ -129,38 +153,13 @@ class Expression():
         oplist = ['+','-','*','/','**']
 
         #list of functions
-        funclist = ['cos', 'sin', 'tan', 'log', 'sinh', 'cosh', 'tanh'] 
+        funclist = ['cos', 'sin', 'tan', 'log', 'sinh', 'cosh', 'tanh']
+
+        tokens = post_tokenize(tokens, funclist)
+        print(tokens)
 
 
-        #is momenteel nog een lelijk stukje code, maar het werkt!
-        #dit maakt het mogelijk om functies in te voeren zonder '*'-tekens
-        #tussen getallen en variabelen en functies
-        i = 0
         for token in tokens:
-            while type(token) == str and len(token) != 1 \
-                  and token != '**' and not isnumber(token):
-
-                plaats = infunclist(token, funclist)
-                if type(plaats) == list and not type(plaats) == bool:
-                    if plaats[1] == 0:
-                        break
-                    function_in_token = plaats[0]
-                    index_from_function = int(plaats[1])
-
-                    tokens[i] = token[0:index_from_function]
-                    tokens.insert(i+1, '*')
-                    tokens.insert(i+2, function_in_token)
-                    token = tokens[i]
-                else:
-                    tokens.insert(i+1, '*')
-                    tokens.insert(i+2, token[-1])
-                    tokens[i] = token[0:-1]
-                    token = tokens[i]
-            i += 1
-
-        
-        for token in tokens:
-            print(tokens)
             if isnumber(token):
                 # numbers go directly to the output
                 if isint(token):
@@ -496,10 +495,10 @@ class tanNode(UnaryNode):
 
 class logNode(UnaryNode):
     """Represents the math.log function"""
-<<<<<<< HEAD
+
     def __init(self, node):
         super(lognode, self).__init__(node, 'log')
-=======
+
     def __init__(self, node):
         super(logNode, self).__init__(node, 'log')
 
@@ -517,6 +516,5 @@ class tanhNode(UnaryNode):
     """Represents the math.tanh function"""
     def __init__(self, node):
         super(tanhNode, self).__init__(node, 'tanh')
->>>>>>> f892e257d55a1d20df6a5a6a0046804d60683685
-        
+      
 # TODO: add more subclasses of Expression to represent operators, variables, functions, etc.
