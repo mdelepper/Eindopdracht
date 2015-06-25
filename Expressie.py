@@ -53,7 +53,8 @@ def post_tokenize(tokens, funclist):
                 token = tokens[i]
 
 
-        if tokens[i-1] == ')' and token in funclist:
+        if tokens[i-1] == ')' and\
+           (token in funclist or (len(token)==1 and type(token) == str)):
             tokens.insert(i, '*')
 
         i +=1
