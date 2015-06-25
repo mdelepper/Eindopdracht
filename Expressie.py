@@ -104,16 +104,12 @@ class Expression():
     def __pow__(self, other):
         return PowerNode(self, other)
 
-#    def herschrijf
-        
-
-    
     # basic Shunting-yard algorithm
     def fromString(string):
         # split into tokens
         tokens = tokenize(string)
 
-
+"""aanpassen nog voor sinus en cosinus en alles!!!"""
         #this makes it possible to make an Expression from String in the form
         #of ax instead of a*x, where 'a' is a number and 'x' is a variable
         #this happens iteratively as we also want to be able to handle axy
@@ -121,7 +117,9 @@ class Expression():
         
         i=0
         for token in tokens:
-            while type(token) == str and len(token) != 1 and token != '**' :
+            while type(token) == str and len(token) != 1 and token != '**'
+            """ and not(token in oplist)
+            and not(deel van token in funclist)""":
                 tokens.insert(i+1, '*')
                 tokens.insert(i+2, token[-1])
                 tokens[i] = token[0:-1]
