@@ -516,5 +516,5 @@ class tanhNode(UnaryNode):
     """Represents the math.tanh function"""
     def __init__(self, node):
         super(tanhNode, self).__init__(node, 'tanh')
-      
+
 # TODO: add more subclasses of Expression to represent operators, variables, functions, etc.
