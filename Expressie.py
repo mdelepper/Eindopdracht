@@ -27,6 +27,9 @@ def tokenize(string):
         else:
             ans.append(t)
     return ans
+    
+    #special casting for negative numbers (so, numbers starting with -):
+    
 
 
     
@@ -105,11 +108,6 @@ class Expression():
     def __pow__(self, other):
         return PowerNode(self, other)
 
-<<<<<<< HEAD
-=======
-#    def herschrijf
-        
->>>>>>> 926bd26eb72b32a108443bb5c07c6b63a06fe85c
 
     
     # basic Shunting-yard algorithm
@@ -283,7 +281,7 @@ class BinaryNode(Expression):
             #when we are dealing with a subtree in the left node
             if isinstance(left, BinaryNode):
                 #we only want to simplify the expression when the operator above is of higher precedence than the operator below
-                if precedence(operator)>precedence(left.op_symbol):
+                if precedence(operator) == precedence(left.op_symbol) + 1:
                     left_side = BinaryNode(left.lhs,self.rhs,self.op_symbol)
                     right_side = BinaryNode(left.rhs,self.rhs,self.op_symbol)
                     new_operator = left.op_symbol
@@ -299,7 +297,7 @@ class BinaryNode(Expression):
             right = self.rhs
             operator = self.op_symbol
             if isinstance(right, BinaryNode):
-                if precedence(operator)>precedence(right.op_symbol):
+                if precedence(operator) == precedence(right.op_symbol) + 1:
                     left_side = BinaryNode(self.lhs,right.lhs,self.op_symbol)
                     right_side = BinaryNode(self.lhs,right.rhs,self.op_symbol)
                     new_operator= right.op_symbol
@@ -395,7 +393,7 @@ class UnaryNode(Expression):
         else:
             return False
 
-    #returs a function f with input x as f(x)
+    #returns a function f with input x as f(x)
     def __str__(self):
         return self.function+'('+ str(self.node) + ')'
 
@@ -457,11 +455,6 @@ class PowerNode(BinaryNode):
     def __init__(self, lhs, rhs):
         super(PowerNode, self).__init__(lhs, rhs, '**')
 
-<<<<<<< HEAD
-a = Expression.fromString('(3+2)*(4+5)*(3+8)*5')
-
-print(a.simplify())
-=======
 class sinnode(UnaryNode):
     """Represents the math.sin function"""
     def __init__(self, node):
@@ -478,4 +471,7 @@ class lognode(UnaryNode):
         super(lognode, self).__init__(node, 'log')
         
 # TODO: add more subclasses of Expression to represent operators, variables, functions, etc.
->>>>>>> 926bd26eb72b32a108443bb5c07c6b63a06fe85c
+
+expr = Expression.fromString('(1+2)*3')
+
+print(expr.simplify())
