@@ -51,8 +51,12 @@ def post_tokenize(tokens, funclist):
                 tokens.insert(i+2, token[-1])
                 tokens[i] = token[0:-1]
                 token = tokens[i]
-        i += 1
-    print(tokens)
+
+
+        if tokens[i-1] == ')' and token in funclist:
+            tokens.insert(i, '*')
+
+        i +=1
     return tokens
 
     
@@ -82,7 +86,12 @@ def isvariable(string):
     except ValueError:
         return False
 
+#we sort the funclist and reverse it so that when two functions are partially
+#the same from the start, the longest of the two is checked first
+#i.e. cosh is checked before cos
 def infunclist(string, funclist):
+    funclist.sort()
+    funclist.reverse()
     for func in funclist:
         if func in string:
             return [func, string.index(func)]
@@ -156,7 +165,6 @@ class Expression():
         funclist = ['cos', 'sin', 'tan', 'log', 'sinh', 'cosh', 'tanh']
 
         tokens = post_tokenize(tokens, funclist)
-        print(tokens)
 
 
         for token in tokens:
@@ -390,7 +398,6 @@ class BinaryNode(Expression):
         #If no value is given for a Variable, we want to return it as a Variable
         #hence we have to distinguish if lhs or rhs is still a variable
         if type(f) == str:
-            print(f)
             expr = f +' '+ str(operator)+' '+ str(g)
             return expr
         if type(g) == str:
