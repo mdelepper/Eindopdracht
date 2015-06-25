@@ -4,8 +4,9 @@ import math
 # returns a list of numbers, operators, parantheses and commas
 # output will not contain spaces
 def tokenize(string):
+    print(string)
     splitchars = list("+-*/(),")
-    
+
     # surround any splitchar by spaces
     tokenstring = []
     for c in string:
@@ -13,12 +14,12 @@ def tokenize(string):
             tokenstring.append(' %s ' % c)
         else:
             tokenstring.append(c)
-    
+                
     tokenstring = ''.join(tokenstring)
     
     #split on spaces - this gives us our tokens
     tokens = tokenstring.split()
-     
+    print(tokens) 
     #special casing for **:
     ans = []
     for t in tokens:
@@ -30,8 +31,6 @@ def tokenize(string):
     
     #special casting for negative numbers (so, numbers starting with -):
     
-
-
     
 # check if a string represents a numeric value
 def isnumber(string):
@@ -115,20 +114,19 @@ class Expression():
         # split into tokens
         tokens = tokenize(string)
 
-
         #this makes it possible to make an Expression from String in the form
         #of ax instead of a*x, where 'a' is a number and 'x' is a variable
         #this happens iteratively as we also want to be able to handle axy
         #as a*x*y (or for even more variables)
         
-        i=0
-        for token in tokens:
-            while type(token) == str and len(token) != 1 and token != '**' :
-                tokens.insert(i+1, '*')
-                tokens.insert(i+2, token[-1])
-                tokens[i] = token[0:-1]
-                token = tokens[i]
-            i = i+1
+##        i=0
+##        for token in tokens:
+##            while type(token) == str and len(token) != 1 and token != '**' :
+##                tokens.insert(i+1, '*')
+##                tokens.insert(i+2, token[-1])
+##                tokens[i] = token[0:-1]
+##                token = tokens[i]
+##            i = i+1
         
         # stack used by the Shunting-Yard algorithm
         stack = []
@@ -140,11 +138,11 @@ class Expression():
         oplist = ['+','-','*','/','**']
 
         #list of functions
-        funclist = ['cos', 'sin', 'log'] 
+        funclist = ['cos', 'sin', 'tan', 'log', 'sinh', 'cosh', 'tanh'] 
        
         
         for token in tokens:
-            
+            print(tokens)
             if isnumber(token):
                 # numbers go directly to the output
                 if isint(token):
@@ -176,9 +174,9 @@ class Expression():
                     output.append(stack.pop())
                 # pop the left paranthesis from the stack (but not to the output)
                 stack.pop()
-                # ) will look for a ( and cancel both, if a function is priliminary to those ()
+                # a ')' will look for a '(' and cancel both, if a function is priliminary to those ()
                 # the function is moved to the output, otherwise operators and functions will be wrongly placed to the output
-                # eg sin(x) + 1 wil be evaluated as sin(x+1)
+                # eg. sin(x) + 1 wil be evaluated as sin(x+1)
                 if len(stack) > 0 and stack[-1] in funclist:
                     output.append(stack.pop())                
             # TODO: do we need more kinds of tokens?
@@ -205,15 +203,23 @@ class Expression():
                 x = stack.pop()
                 stack.append(eval('x %s y' % t))
             #translocate function from the output to the stack with use of the class of the 
-            #function to ascribe the input to the function    
+            #function to ascribe the input to the mathematical function    
             elif t in funclist:
                 z = stack.pop()
                 if t == 'sin':
-                    stack.append(sinnode(z))
+                    stack.append(sinNode(z))
                 elif t == 'cos':
-                    stack.append(cosnode(z))
+                    stack.append(cosNode(z))
+                elif t == 'tan':
+                    stack.append(tanNode(z))
                 elif t == 'log':
-                    stack.append(lognode(z))
+                    stack.append(logNode(z))
+                elif t == 'sinh':
+                    stack.append(sinhNode(z))
+                elif t == 'cosh':
+                    stack.append(coshNode(z))
+                elif t == 'tanh':
+                    stack.append(tanhNode(z))
             else:
                 # a constant, push it to the stack
                 stack.append(t)
@@ -402,9 +408,9 @@ class UnaryNode(Expression):
         h = self.node.evaluate(expression_to_evaluate)
 
         #If no value is given for a Variable, we want to return it as a Variable
-        #hence we have to distinguish if lhs or rhs is still a variable
+        #hence we have to distinguish if node is still a variable
         if type(h) == str:
-            expr = f + '(' + h + ')' 
+            expr = fun + '(' + h + ')' 
             return expr
         else:
             return eval( 'math.' + fun + '(' + str(h) + ')' )
@@ -455,23 +461,39 @@ class PowerNode(BinaryNode):
     def __init__(self, lhs, rhs):
         super(PowerNode, self).__init__(lhs, rhs, '**')
 
-class sinnode(UnaryNode):
+class sinNode(UnaryNode):
     """Represents the math.sin function"""
     def __init__(self, node):
-        super(sinnode, self).__init__(node, 'sin')
+        super(sinNode, self).__init__(node, 'sin')
 
-class cosnode(UnaryNode):
+class cosNode(UnaryNode):
     """Represents the math.cos function"""
     def __init__(self, node):
-        super(cosnode, self).__init__(node, 'cos')
+        super(cosNode, self).__init__(node, 'cos')
 
-class lognode(UnaryNode):
+class tanNode(UnaryNode):
+    """Represents the math.tan function"""
+    def __init__(self, node):
+        super(tanNode, self).__init__(node, 'tan')
+
+class logNode(UnaryNode):
     """Represents the math.log function"""
-    def __init(self, node):
-        super(lognode, self).__init__(node, 'log')
+    def __init__(self, node):
+        super(logNode, self).__init__(node, 'log')
+
+class sinhNode(UnaryNode):
+    """Represents the math.sinh function"""
+    def __init__(self, node):
+        super(sinhNode, self).__init__(node, 'sinh')
+
+class coshNode(UnaryNode):
+    """Represents the math.cosh function"""
+    def __init__(self, node):
+        super(coshNode, self).__init__(node, 'cosh')
+
+class tanhNode(UnaryNode):
+    """Represents the math.tanh function"""
+    def __init__(self, node):
+        super(tanhNode, self).__init__(node, 'tanh')
         
 # TODO: add more subclasses of Expression to represent operators, variables, functions, etc.
-
-expr = Expression.fromString('(1+2)*3')
-
-print(expr.simplify())
