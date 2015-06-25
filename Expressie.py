@@ -272,6 +272,7 @@ class BinaryNode(Expression):
     
     #We want to simplify our Expression tree, such that evaluating is extra easy
     #We want a tree that has the operators of highest precedence at the bottom and operators of lower precedence above
+    #This does not always have to be possible
     def simplify(self):
         
         #first simplify the left hand side
@@ -280,7 +281,7 @@ class BinaryNode(Expression):
             operator = self.op_symbol
             #when we are dealing with a subtree in the left node
             if isinstance(left, BinaryNode):
-                #we only want to simplify the expression when the operator above is of higher precedence than the operator below
+                #we only want to simplify the expression when the precedence of the operator above is one more than the precedence of the operator below
                 if precedence(operator) == precedence(left.op_symbol) + 1:
                     left_side = BinaryNode(left.lhs,self.rhs,self.op_symbol)
                     right_side = BinaryNode(left.rhs,self.rhs,self.op_symbol)
@@ -292,7 +293,10 @@ class BinaryNode(Expression):
             else:
                 return self
         
-        #now we simplify the right hand side. The method is exactly the same        
+        #now we simplify the right hand side. The method is almost the same
+        #there is one difference: when we have a sum in the exponent, we can write it as a product in the base number
+        #So we want: a**(b+c) = a**b * a**c
+        #NOTE: this doesn't hold the other way around! (a+b)**c != a**c * b**c
         def simplify_right(self):
             right = self.rhs
             operator = self.op_symbol
@@ -300,8 +304,12 @@ class BinaryNode(Expression):
                 if precedence(operator) == precedence(right.op_symbol) + 1:
                     left_side = BinaryNode(self.lhs,right.lhs,self.op_symbol)
                     right_side = BinaryNode(self.lhs,right.rhs,self.op_symbol)
-                    new_operator= right.op_symbol
+                    new_operator = right.op_symbol
                     return BinaryNode(left_side.simplify(),right_side.simplify(),new_operator)
+                elif precedence(operator) == precedence(right.op_symbol) + 2:
+                    left_side = BinaryNode(self.lhs,right.lhs,self.op_symbol)
+                    right_side = BinaryNode(self.lhs,right.rhs,self.op_symbol)
+                    return MultiplyNode(left_side.simplify(),right_side.simplify())
                 else:
                     return self
             else:
@@ -471,7 +479,3 @@ class lognode(UnaryNode):
         super(lognode, self).__init__(node, 'log')
         
 # TODO: add more subclasses of Expression to represent operators, variables, functions, etc.
-
-expr = Expression.fromString('(1+2)*3')
-
-print(expr.simplify())
