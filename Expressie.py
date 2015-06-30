@@ -1,4 +1,5 @@
 import math
+import bisection
 
 # split a string into mathematical tokens
 # returns a list of numbers, operators, parantheses and commas
@@ -146,14 +147,10 @@ class Expression():
         
     def __pow__(self, other):
         return PowerNode(self, other)
-<<<<<<< HEAD
     
     def abridge(self):
         return self
 
-=======
-        
->>>>>>> 11c020484b036e91f2cee726e798f391e2b6f51f
     
     # basic Shunting-yard algorithm
     def fromString(string):
@@ -265,6 +262,13 @@ class Expression():
     #of expression, where we override this method
     def evaluate(self, expression_to_evaluate = dict()):
         pass
+
+
+    """nog aanpassen!!!!"""
+    def findRoots(self, variable_to_evaluate, a, b, epsilon):
+        return bisection.findRoot(str(self), variable_to_evaluate, \
+                                      a, b, epsilon)
+        
 
    
 class Constant(Expression):
