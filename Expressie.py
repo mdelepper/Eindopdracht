@@ -3,9 +3,8 @@ import math
 # split a string into mathematical tokens
 # returns a list of numbers, operators, parantheses and commas
 # output will not contain spaces
-def tokenize(string):
+def tokenize(string, oplist, funclist):
     splitchars = list("+-*/(),")
-
     # surround any splitchar by spaces
     tokenstring = []
     for c in string:
@@ -18,7 +17,17 @@ def tokenize(string):
     
     #split on spaces - this gives us our tokens
     tokens = tokenstring.split()
-    print(tokens) 
+    print(tokens)
+
+    if tokens[0] == '-':
+        tokens[0] = '~'
+        
+    for i in range(len(tokens)):
+        if tokens[i] == '-' and (tokens[i-1] in oplist or tokens[i-1] in list('()') or tokens[i-1] in funclist) :
+                tokens[i] = '~'
+
+    
+    print(tokens)
     #special casing for **:
     ans = []
     for t in tokens:
@@ -27,7 +36,7 @@ def tokenize(string):
         else:
             ans.append(t)
     return ans
-    
+
     #special casting for negative numbers (so, numbers starting with -):
     
     
@@ -75,7 +84,7 @@ def precedence(token):
     elif token == '**':
         return(3)
     else:
-        return(0)
+        return(4)
     
 # checking wether a token is associative or not   
 # Needed for mininmal use of brackets when printing our final expression
@@ -115,8 +124,15 @@ class Expression():
     
     # basic Shunting-yard algorithm
     def fromString(string):
+        
+        # list of operators
+        oplist = ['+','-','*','/','**']
+
+        #list of functions
+        funclist = ['cos', 'sin', 'tan', 'log', 'sinh', 'cosh', 'tanh', '~'] 
+        
         # split into tokens
-        tokens = tokenize(string)
+        tokens = tokenize(string, oplist, funclist)
 
         # stack used by the Shunting-Yard algorithm
         stack = []
@@ -124,13 +140,7 @@ class Expression():
         # this will contain Constant's and '+'s
         output = []
         
-        # list of operators
-        oplist = ['+','-','*','/','**']
-
-        #list of functions
-        funclist = ['cos', 'sin', 'tan', 'log', 'sinh', 'cosh', 'tanh'] 
-
-
+    
         #is momenteel nog een lelijk stukje code, maar het werkt!
         #dit maakt het mogelijk om functies in te voeren zonder '*'-tekens
         #tussen getallen en variabelen en functies
@@ -169,12 +179,12 @@ class Expression():
             elif isvariable(token):
                 output.append(Variable(str(token)))
                 
-            elif token in oplist:
+            elif token in oplist or token in funclist:
                 # pop operators from the stack to the output until the top is no longer an operator
                 while True:
                     # TODO: when there are more operators, the rules are more complicated
                     # look up the shunting yard-algorithm
-                    if len(stack) == 0 or stack[-1] not in oplist or int(precedence(token)) > int(precedence(stack[-1])):
+                    if len(stack) == 0 or (stack[-1] not in oplist and stack[-1] not in funclist) or int(precedence(token)) >= int(precedence(stack[-1])):
                         break
                     output.append(stack.pop())
                 # push the new operator onto the stack
@@ -203,14 +213,17 @@ class Expression():
                         break
                     output.append(stack.pop())
                 stack.append(token)
+                
             else:
                 # unknown token
                 raise ValueError('Unknown token: %s' % token)
+        
             
         # pop any tokens still on the stack to the output
         while len(stack) > 0:
             output.append(stack.pop())
-        
+            
+        print(output)       
         # convert RPN to an actual expression tree
         for t in output:
             if t in oplist:
@@ -236,6 +249,8 @@ class Expression():
                     stack.append(coshNode(z))
                 elif t == 'tanh':
                     stack.append(tanhNode(z))
+                elif t == '~':
+                    stack.append(negativeNode(z))
             else:
                 # a constant, push it to the stack
                 stack.append(t)
@@ -392,12 +407,13 @@ class BinaryNode(Expression):
             print(f)
             expr = f +' '+ str(operator)+' '+ str(g)
             return expr
+        
         if type(g) == str:
-           
-            expr = str(f)+ ' '+str(operator) +' '+ g
+            expr = str(f)+ ' '+ str(operator) +' '+ g
             return expr
+        
         else:
-            return eval('f' + operator + 'g')
+            return  eval( str(f) + operator + str(g) )
         
 #class for notBinaryNodes in the expressiontree (i.e. functions with input)
 class UnaryNode(Expression):
@@ -515,5 +531,20 @@ class tanhNode(UnaryNode):
     """Represents the math.tanh function"""
     def __init__(self, node):
         super(tanhNode, self).__init__(node, 'tanh')
-        
+
+class negativeNode(UnaryNode):
+    """Represents a *(-1) function"""
+    def __init__(self, node):
+        super(negativeNode, self).__init__(node, '-')
+
+    def evaluate(self, dictionary = dict()):
+        if type(self.node) == str:
+            print( '-' + self.node)
+        else:
+            return eval( '-' + str(self.node.evaluate(dictionary)) )
+
+    def __str__(self):
+        return '-' + str(self.node)
+ 
+
 # TODO: add more subclasses of Expression to represent operators, variables, functions, etc.
