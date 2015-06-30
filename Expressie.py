@@ -17,7 +17,6 @@ def tokenize(string, oplist, funclist):
     
     #split on spaces - this gives us our tokens
     tokens = tokenstring.split()
-    print(tokens)
 
     if tokens[0] == '-':
         tokens[0] = '~'
@@ -26,8 +25,6 @@ def tokenize(string, oplist, funclist):
         if tokens[i] == '-' and (tokens[i-1] in oplist or tokens[i-1] in list('()') or tokens[i-1] in funclist) :
                 tokens[i] = '~'
 
-    
-    print(tokens)
     #special casing for **:
     ans = []
     for t in tokens:
@@ -38,7 +35,38 @@ def tokenize(string, oplist, funclist):
     return ans
 
     #special casting for negative numbers (so, numbers starting with -):
-    
+
+def post_tokenize(tokens, funclist):
+    i = 0
+    for token in tokens:
+        while type(token) == str and len(token) != 1 \
+              and token != '**' and not isnumber(token):
+            plaats = infunclist(token, funclist)
+            if type(plaats) == list and not type(plaats) == bool:
+                if plaats[1] == 0:
+                    break
+                function_in_token = plaats[0]
+                index_from_function = int(plaats[1])
+
+                tokens[i] = token[0:index_from_function]
+                tokens.insert(i+1, '*')
+                tokens.insert(i+2, function_in_token)
+                token = tokens[i]
+
+            else:
+                tokens.insert(i+1, '*')
+                tokens.insert(i+2, token[-1])
+                tokens[i] = token[0:-1]
+                token = tokens[i]
+
+
+        if tokens[i-1] == ')' and\
+           (token in funclist or (len(token)==1 and type(token) == str)):
+            tokens.insert(i, '*')
+
+        i +=1
+    return tokens
+
     
 # check if a string represents a numeric value
 def isnumber(string):
@@ -66,7 +94,12 @@ def isvariable(string):
     except ValueError:
         return False
 
+#we sort the funclist and reverse it so that when two functions are partially
+#the same from the start, the longest of the two is checked first
+#i.e. cosh is checked before cos
 def infunclist(string, funclist):
+    funclist.sort()
+    funclist.reverse()
     for func in funclist:
         if func in string:
             return [func, string.index(func)]
@@ -107,7 +140,7 @@ class Expression():
     # operator overloading:
     # this allows us to perform 'arithmetic' with expressions, and obtain another expression
     def __add__(self, other):
-        return AddNode(self, other)
+            return AddNode(self, other)
     
     def __sub__(self, other):
         return SubstractNode(self, other)
@@ -120,7 +153,10 @@ class Expression():
         
     def __pow__(self, other):
         return PowerNode(self, other)
-        
+    
+    def abridge(self):
+        return self
+
     
     # basic Shunting-yard algorithm
     def fromString(string):
@@ -149,25 +185,9 @@ class Expression():
             while type(token) == str and len(token) != 1 \
                   and token != '**' and not isnumber(token):
 
-                plaats = infunclist(token, funclist)
-                if type(plaats) == list and not type(plaats) == bool:
-                    if plaats[1] == 0:
-                        break
-                    function_in_token = plaats[0]
-                    index_from_function = int(plaats[1])
+        tokens = post_tokenize(tokens, funclist)
 
-                    tokens[i] = token[0:index_from_function]
-                    tokens.insert(i+1, '*')
-                    tokens.insert(i+2, function_in_token)
-                    token = tokens[i]
-                else:
-                    tokens.insert(i+1, '*')
-                    tokens.insert(i+2, token[-1])
-                    tokens[i] = token[0:-1]
-                    token = tokens[i]
-            i += 1
 
-        
         for token in tokens:
             if isnumber(token):
                 # numbers go directly to the output
@@ -264,7 +284,6 @@ class Expression():
     def evaluate(self, expression_to_evaluate = dict()):
         pass
 
-
    
 class Constant(Expression):
     """Represents a constant value"""
@@ -307,9 +326,11 @@ class BinaryNode(Expression):
         else:
             return False
     
+
     #We want to simplify our Expression tree, such that evaluating is extra easy
     #We want a tree that has the operators of highest precedence at the bottom and operators of lower precedence above
     def simplify(self):
+        """a method for simplifying our expression tree"""
         
         #first simplify the left hand side
         def simplify_left(self):
@@ -346,6 +367,9 @@ class BinaryNode(Expression):
         
         #We obtain our final result by first simplifying the left hand side and then simplifying the right hand side
         return(simplify_right(simplify_left(self)))
+        
+    
+    
             
     def __str__(self):
         """Printing our final expression while determining when we need brackets"""
@@ -404,7 +428,6 @@ class BinaryNode(Expression):
         #If no value is given for a Variable, we want to return it as a Variable
         #hence we have to distinguish if lhs or rhs is still a variable
         if type(f) == str:
-            print(f)
             expr = f +' '+ str(operator)+' '+ str(g)
             return expr
         
@@ -472,26 +495,106 @@ class AddNode(BinaryNode):
     """Represents the addition operator"""
     def __init__(self, lhs, rhs):
         super(AddNode, self).__init__(lhs, rhs, '+')
+        
+    def abridge(self):
+    # We overwrite abridge such that c+0=c and 0+c=c for all Constants and Variables c
+    # We also calculate the sum of two Constants
+        lhs = self.lhs.abridge()
+        rhs = self.rhs.abridge()
+        if lhs == Constant(0):
+            return rhs
+        elif rhs == Constant(0):
+            return lhs
+        elif type(lhs)==Constant and type(rhs)==Constant:
+            return Constant(eval(str(lhs+rhs)))
+        else:
+            return AddNode(lhs,rhs)
 
 class SubstractNode(BinaryNode):
     """Represents the substraction operator"""
     def __init__(self, lhs, rhs):
         super(SubstractNode, self).__init__(lhs, rhs, '-')
         
+    def abridge(self):
+    # We overwrite abridge such that c-0=c and 0-c=-c for all Constants and Variables c
+    # We also Calculate the difference between two Constants
+        lhs = self.lhs.abridge()
+        rhs = self.rhs.abridge()
+        if lhs == Constant(0):
+            return -rhs
+        elif rhs == Constant(0):
+            return lhs
+        elif type(lhs)==Constant and type(rhs) == Constant:
+            return Constant(eval(str(lhs-rhs)))
+        else:
+            return SubstractNode(lhs,rhs)
+        
 class MultiplyNode(BinaryNode):
     """Represents the multiplication operator"""
     def __init__(self, lhs, rhs):
         super(MultiplyNode, self).__init__(lhs, rhs, '*')
+    
+    def abridge(self):
+    # We overwrite abridge such that c*0=0*c=0 and c*1=1*c=c and c*-1=-1*c=-c for all Constants and Variables c
+    # We also calculate the multiplication of two Constants
+        lhs = self.lhs.abridge()
+        rhs = self.rhs.abridge()
+        if lhs == Constant(0) or rhs == Constant(0):
+            return(Constant(0))
+        elif lhs == Constant(1):
+            return rhs
+        elif rhs == Constant(1):
+            return lhs
+        elif lhs == Constant(-1):
+            return -rhs
+        elif rhs == Constant(-1):
+            return -lhs
+        elif type(lhs) == Constant and type(rhs) == Constant:
+            return Constant(eval(str(lhs*rhs)))
+        else:
+            return MultiplyNode(lhs,rhs)
 
 class DivideNode(BinaryNode):
     """Represents the division operator"""
     def __init__(self, lhs, rhs):
         super(DivideNode, self).__init__(lhs, rhs, '/')
+    
+    def abridge(self):
+    # We overwrite abridge such that c/0='Error' and 0/c=0 and c/1=c for all Constants and Variables c
+    # We do not calculate here, we think it is nicer to show fractions than to show floats
+        lhs = self.lhs.abridge()
+        rhs = self.rhs.abridge()
+        if lhs == Constant(0):
+            return Constant(0)
+        elif rhs == Constant(0):
+            return('Delen door nul is flauwekul!')
+        elif rhs == Constant(1):
+            return lhs
+        else:
+            return DivideNode(self,rhs)
         
 class PowerNode(BinaryNode):
     """Represents the power operator"""
     def __init__(self, lhs, rhs):
         super(PowerNode, self).__init__(lhs, rhs, '**')
+        
+    def abridge(self):
+    # We overwrite abridge such that c**0=1, c**1°c, 0**c=0 and 1**c=1 for all Constants and Variables c
+    # We calculate the power of two Constants
+        lhs = self.lhs.abridge()
+        rhs = self.rhs.abridge()
+        if lhs == Constant(0):
+            return Constant(0)
+        elif lhs == Constant(1):
+            return Constant(1)
+        elif rhs == Constant(0):
+            return Constant(1)
+        elif rhs == Constant(1):
+            return lhs
+        elif type(lhs) == Constant and type(rhs) == Constant:
+            return Constant(eval(str(lhs**rhs)))
+        else:
+            return PowerNode(lhs,rhs)
 
 class sinNode(UnaryNode):
     """Represents the math.sin function"""
@@ -545,6 +648,5 @@ class negativeNode(UnaryNode):
 
     def __str__(self):
         return '-' + str(self.node)
- 
-
+    
 # TODO: add more subclasses of Expression to represent operators, variables, functions, etc.
