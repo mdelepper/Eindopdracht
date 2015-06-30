@@ -5,7 +5,7 @@ import math
 # output will not contain spaces
 def tokenize(string):
     splitchars = list("+-*/(),")
-    
+
     # surround any splitchar by spaces
     tokenstring = []
     for c in string:
@@ -13,12 +13,11 @@ def tokenize(string):
             tokenstring.append(' %s ' % c)
         else:
             tokenstring.append(c)
-    
+                
     tokenstring = ''.join(tokenstring)
     
     #split on spaces - this gives us our tokens
     tokens = tokenstring.split()
-     
     #special casing for **:
     ans = []
     for t in tokens:
@@ -29,8 +28,37 @@ def tokenize(string):
     return ans
     
     #special casting for negative numbers (so, numbers starting with -):
-    
 
+def post_tokenize(tokens, funclist):
+    i = 0
+    for token in tokens:
+        while type(token) == str and len(token) != 1 \
+              and token != '**' and not isnumber(token):
+            plaats = infunclist(token, funclist)
+            if type(plaats) == list and not type(plaats) == bool:
+                if plaats[1] == 0:
+                    break
+                function_in_token = plaats[0]
+                index_from_function = int(plaats[1])
+
+                tokens[i] = token[0:index_from_function]
+                tokens.insert(i+1, '*')
+                tokens.insert(i+2, function_in_token)
+                token = tokens[i]
+
+            else:
+                tokens.insert(i+1, '*')
+                tokens.insert(i+2, token[-1])
+                tokens[i] = token[0:-1]
+                token = tokens[i]
+
+
+        if tokens[i-1] == ')' and\
+           (token in funclist or (len(token)==1 and type(token) == str)):
+            tokens.insert(i, '*')
+
+        i +=1
+    return tokens
 
     
 # check if a string represents a numeric value
@@ -58,6 +86,17 @@ def isvariable(string):
                 return True
     except ValueError:
         return False
+
+#we sort the funclist and reverse it so that when two functions are partially
+#the same from the start, the longest of the two is checked first
+#i.e. cosh is checked before cos
+def infunclist(string, funclist):
+    funclist.sort()
+    funclist.reverse()
+    for func in funclist:
+        if func in string:
+            return [func, string.index(func)]
+    return False
 
         
 # making a difference between precedence add/sub, mul/div, pow
@@ -107,31 +146,20 @@ class Expression():
         
     def __pow__(self, other):
         return PowerNode(self, other)
+<<<<<<< HEAD
     
     def abridge(self):
         return self
 
+=======
+        
+>>>>>>> 11c020484b036e91f2cee726e798f391e2b6f51f
     
     # basic Shunting-yard algorithm
     def fromString(string):
         # split into tokens
         tokens = tokenize(string)
 
-
-        #this makes it possible to make an Expression from String in the form
-        #of ax instead of a*x, where 'a' is a number and 'x' is a variable
-        #this happens iteratively as we also want to be able to handle axy
-        #as a*x*y (or for even more variables)
-        
-        i=0
-        for token in tokens:
-            while type(token) == str and len(token) != 1 and token != '**' :
-                tokens.insert(i+1, '*')
-                tokens.insert(i+2, token[-1])
-                tokens[i] = token[0:-1]
-                token = tokens[i]
-            i = i+1
-        
         # stack used by the Shunting-Yard algorithm
         stack = []
         # output of the algorithm: a list representing the formula in RPN
@@ -142,11 +170,12 @@ class Expression():
         oplist = ['+','-','*','/','**']
 
         #list of functions
-        funclist = ['cos', 'sin', 'log'] 
-       
-        
+        funclist = ['cos', 'sin', 'tan', 'log', 'sinh', 'cosh', 'tanh']
+
+        tokens = post_tokenize(tokens, funclist)
+
+
         for token in tokens:
-            
             if isnumber(token):
                 # numbers go directly to the output
                 if isint(token):
@@ -178,9 +207,9 @@ class Expression():
                     output.append(stack.pop())
                 # pop the left paranthesis from the stack (but not to the output)
                 stack.pop()
-                # ) will look for a ( and cancel both, if a function is priliminary to those ()
+                # a ')' will look for a '(' and cancel both, if a function is priliminary to those ()
                 # the function is moved to the output, otherwise operators and functions will be wrongly placed to the output
-                # eg sin(x) + 1 wil be evaluated as sin(x+1)
+                # eg. sin(x) + 1 wil be evaluated as sin(x+1)
                 if len(stack) > 0 and stack[-1] in funclist:
                     output.append(stack.pop())                
             # TODO: do we need more kinds of tokens?
@@ -207,15 +236,23 @@ class Expression():
                 x = stack.pop()
                 stack.append(eval('x %s y' % t))
             #translocate function from the output to the stack with use of the class of the 
-            #function to ascribe the input to the function    
+            #function to ascribe the input to the mathematical function    
             elif t in funclist:
                 z = stack.pop()
                 if t == 'sin':
-                    stack.append(sinnode(z))
+                    stack.append(sinNode(z))
                 elif t == 'cos':
-                    stack.append(cosnode(z))
+                    stack.append(cosNode(z))
+                elif t == 'tan':
+                    stack.append(tanNode(z))
                 elif t == 'log':
-                    stack.append(lognode(z))
+                    stack.append(logNode(z))
+                elif t == 'sinh':
+                    stack.append(sinhNode(z))
+                elif t == 'cosh':
+                    stack.append(coshNode(z))
+                elif t == 'tanh':
+                    stack.append(tanhNode(z))
             else:
                 # a constant, push it to the stack
                 stack.append(t)
@@ -274,7 +311,6 @@ class BinaryNode(Expression):
 
     #We want to simplify our Expression tree, such that evaluating is extra easy
     #We want a tree that has the operators of highest precedence at the bottom and operators of lower precedence above
-    #This does not always have to be possible
     def simplify(self):
         """a method for simplifying our expression tree"""
         
@@ -284,7 +320,7 @@ class BinaryNode(Expression):
             operator = self.op_symbol
             #when we are dealing with a subtree in the left node
             if isinstance(left, BinaryNode):
-                #we only want to simplify the expression when the precedence of the operator above is one more than the precedence of the operator below
+                #we only want to simplify the expression when the operator above is of higher precedence than the operator below
                 if precedence(operator) == precedence(left.op_symbol) + 1:
                     left_side = BinaryNode(left.lhs,self.rhs,self.op_symbol)
                     right_side = BinaryNode(left.rhs,self.rhs,self.op_symbol)
@@ -296,10 +332,7 @@ class BinaryNode(Expression):
             else:
                 return self
         
-        #now we simplify the right hand side. The method is almost the same
-        #there is one difference: when we have a sum in the exponent, we can write it as a product in the base number
-        #So we want: a**(b+c) = a**b * a**c
-        #NOTE: this doesn't hold the other way around! (a+b)**c != a**c * b**c
+        #now we simplify the right hand side. The method is exactly the same        
         def simplify_right(self):
             right = self.rhs
             operator = self.op_symbol
@@ -307,12 +340,8 @@ class BinaryNode(Expression):
                 if precedence(operator) == precedence(right.op_symbol) + 1:
                     left_side = BinaryNode(self.lhs,right.lhs,self.op_symbol)
                     right_side = BinaryNode(self.lhs,right.rhs,self.op_symbol)
-                    new_operator = right.op_symbol
+                    new_operator= right.op_symbol
                     return BinaryNode(left_side.simplify(),right_side.simplify(),new_operator)
-                elif precedence(operator) == precedence(right.op_symbol) + 2:
-                    left_side = BinaryNode(self.lhs,right.lhs,self.op_symbol)
-                    right_side = BinaryNode(self.lhs,right.rhs,self.op_symbol)
-                    return MultiplyNode(left_side.simplify(),right_side.simplify())
                 else:
                     return self
             else:
@@ -381,7 +410,6 @@ class BinaryNode(Expression):
         #If no value is given for a Variable, we want to return it as a Variable
         #hence we have to distinguish if lhs or rhs is still a variable
         if type(f) == str:
-            print(f)
             expr = f +' '+ str(operator)+' '+ str(g)
             return expr
         if type(g) == str:
@@ -417,9 +445,9 @@ class UnaryNode(Expression):
         h = self.node.evaluate(expression_to_evaluate)
 
         #If no value is given for a Variable, we want to return it as a Variable
-        #hence we have to distinguish if lhs or rhs is still a variable
+        #hence we have to distinguish if node is still a variable
         if type(h) == str:
-            expr = f + '(' + h + ')' 
+            expr = fun + '(' + h + ')' 
             return expr
         else:
             return eval( 'math.' + fun + '(' + str(h) + ')' )
@@ -550,19 +578,43 @@ class PowerNode(BinaryNode):
         else:
             return PowerNode(lhs,rhs)
 
-class sinnode(UnaryNode):
+class sinNode(UnaryNode):
     """Represents the math.sin function"""
     def __init__(self, node):
-        super(sinnode, self).__init__(node, 'sin')
+        super(sinNode, self).__init__(node, 'sin')
 
-class cosnode(UnaryNode):
+class cosNode(UnaryNode):
     """Represents the math.cos function"""
     def __init__(self, node):
-        super(cosnode, self).__init__(node, 'cos')
+        super(cosNode, self).__init__(node, 'cos')
 
-class lognode(UnaryNode):
+class tanNode(UnaryNode):
+    """Represents the math.tan function"""
+    def __init__(self, node):
+        super(tanNode, self).__init__(node, 'tan')
+
+class logNode(UnaryNode):
     """Represents the math.log function"""
+
     def __init(self, node):
         super(lognode, self).__init__(node, 'log')
-        
+
+    def __init__(self, node):
+        super(logNode, self).__init__(node, 'log')
+
+class sinhNode(UnaryNode):
+    """Represents the math.sinh function"""
+    def __init__(self, node):
+        super(sinhNode, self).__init__(node, 'sinh')
+
+class coshNode(UnaryNode):
+    """Represents the math.cosh function"""
+    def __init__(self, node):
+        super(coshNode, self).__init__(node, 'cosh')
+
+class tanhNode(UnaryNode):
+    """Represents the math.tanh function"""
+    def __init__(self, node):
+        super(tanhNode, self).__init__(node, 'tanh')
+
 # TODO: add more subclasses of Expression to represent operators, variables, functions, etc.
