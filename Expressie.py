@@ -1,4 +1,5 @@
 import math
+import bisection
 
 # split a string into mathematical tokens
 # returns a list of numbers, operators, parantheses and commas
@@ -283,6 +284,13 @@ class Expression():
     #of expression, where we override this method
     def evaluate(self, expression_to_evaluate = dict()):
         pass
+
+
+    """nog aanpassen!!!!"""
+    def findRoots(self, variable_to_evaluate, a, b, epsilon):
+        return bisection.findRoot(str(self), variable_to_evaluate, \
+                                      a, b, epsilon)
+        
 
    
 class Constant(Expression):
