@@ -43,6 +43,7 @@ def post_tokenize(tokens, funclist):
         while type(token) == str and len(token) != 1 \
               and token != '**' and not isnumber(token):
             plaats = infunclist(token, funclist)
+            
             if type(plaats) == list and not type(plaats) == bool:
                 if plaats[1] == 0:
                     break
@@ -61,7 +62,7 @@ def post_tokenize(tokens, funclist):
                 token = tokens[i]
 
 
-        if tokens[i-1] == ')' and\
+        if tokens[i-1] == ')' and i != 0 and\
            (token in funclist or (len(token)==1 and type(token) == str)):
             tokens.insert(i, '*')
 
@@ -177,15 +178,6 @@ class Expression():
         # this will contain Constant's and '+'s
         output = []
         
-    
-        #is momenteel nog een lelijk stukje code, maar het werkt!
-        #dit maakt het mogelijk om functies in te voeren zonder '*'-tekens
-        #tussen getallen en variabelen en functies
-        i = 0
-        for token in tokens:
-            while type(token) == str and len(token) != 1 \
-                  and token != '**' and not isnumber(token):
-
         tokens = post_tokenize(tokens, funclist)
 
 
@@ -243,8 +235,8 @@ class Expression():
         # pop any tokens still on the stack to the output
         while len(stack) > 0:
             output.append(stack.pop())
+
             
-        print(output)       
         # convert RPN to an actual expression tree
         for t in output:
             if t in oplist:
