@@ -37,12 +37,13 @@ def tokenize(string, oplist, funclist):
 
     #special casting for negative numbers (so, numbers starting with -):
 
-def post_tokenize(tokens, funclist):
+def post_tokenize(tokens, funclist, oplist):
     i = 0
     for token in tokens:
         while type(token) == str and len(token) != 1 \
-              and token != '**' and not isnumber(token):
+              and token not in oplist and not isnumber(token):
             plaats = infunclist(token, funclist)
+            
             if type(plaats) == list and not type(plaats) == bool:
                 if plaats[1] == 0:
                     break
@@ -60,9 +61,13 @@ def post_tokenize(tokens, funclist):
                 tokens[i] = token[0:-1]
                 token = tokens[i]
 
-
-        if tokens[i-1] == ')' and\
-           (token in funclist or (len(token)==1 and type(token) == str)):
+        #if i= 0, then [i-1] will be the last element of the list, but we want
+        #subsequent characters.
+        ##we also do not want * between two ')'
+        ##or between )'and an operator
+        if i != 0 and tokens[i-1] == ')' and tokens[i] != ')' and \
+           (token in funclist or (len(token)==1 and type(token) == str)) \
+           and token not in oplist:
             tokens.insert(i, '*')
 
         i +=1
@@ -176,18 +181,8 @@ class Expression():
         # output of the algorithm: a list representing the formula in RPN
         # this will contain Constant's and '+'s
         output = []
-        
-    
-        #is momenteel nog een lelijk stukje code, maar het werkt!
-        #dit maakt het mogelijk om functies in te voeren zonder '*'-tekens
-        #tussen getallen en variabelen en functies
-        i = 0
-        for token in tokens:
-            while type(token) == str and len(token) != 1 \
-                  and token != '**' and not isnumber(token):
 
-        tokens = post_tokenize(tokens, funclist)
-
+        tokens = post_tokenize(tokens, funclist, oplist)
 
         for token in tokens:
             if isnumber(token):
@@ -243,8 +238,8 @@ class Expression():
         # pop any tokens still on the stack to the output
         while len(stack) > 0:
             output.append(stack.pop())
+
             
-        print(output)       
         # convert RPN to an actual expression tree
         for t in output:
             if t in oplist:
@@ -288,7 +283,7 @@ class Expression():
 
     """nog aanpassen!!!!"""
     def findRoots(self, variable_to_evaluate, a, b, epsilon):
-        return bisection.findRoot(str(self), variable_to_evaluate, \
+        return bisection.findAllRoots(str(self), variable_to_evaluate, \
                                       a, b, epsilon)
         
 
@@ -337,46 +332,40 @@ class BinaryNode(Expression):
 
     #We want to simplify our Expression tree, such that evaluating is extra easy
     #We want a tree that has the operators of highest precedence at the bottom and operators of lower precedence above
-    
-    #first we simplify the left hand side of the tree
-    def simplify_left(self):
-        left = self.lhs
-        operator = self.op_symbol
-        #when we are dealing with a subtree in the left node
-        if isinstance(left, BinaryNode):
-            #we only want to simplify the expression when the operator above is of higher precedence than the operator below
-            if precedence(operator) == precedence(left.op_symbol) + 1:
-                left_side = BinaryNode(left.lhs,self.rhs,self.op_symbol)
-                right_side = BinaryNode(left.rhs,self.rhs,self.op_symbol)
-                new_operator = left.op_symbol
-                #We have to simplify our outcome again, until everything is simplified
-                return BinaryNode(left_side.simplify(),right_side.simplify(),new_operator)
+    def simplify(self):  
+        
+        #first we simplify the left hand side of the tree
+        def simplify_left(self):
+            left = self.lhs
+            operator = self.op_symbol
+            #when we are dealing with a subtree in the left node
+            if isinstance(left, BinaryNode):
+                #we only want to simplify the expression when the operator above is of higher precedence than the operator below
+                if precedence(operator) == precedence(left.op_symbol) + 1:
+                    left_side = BinaryNode(left.lhs,self.rhs,self.op_symbol)
+                    right_side = BinaryNode(left.rhs,self.rhs,self.op_symbol)
+                    new_operator = left.op_symbol
+                    #We have to simplify our outcome again, until everything is simplified
+                    return BinaryNode(left_side.simplify(),right_side.simplify(),new_operator)
+                else:
+                    return self
             else:
                 return self
-        else:
-            return self
     
-    #now we simplify the right hand side. The method is similar      
-    
-    def simplify_right(self):
-        right = self.rhs
-        operator = self.op_symbol
-        if isinstance(right, BinaryNode):
-            if precedence(operator) == precedence(right.op_symbol) + 1:
-                left_side = BinaryNode(self.lhs,right.lhs,self.op_symbol)
-                right_side = BinaryNode(self.lhs,right.rhs,self.op_symbol)
-                new_operator= right.op_symbol
-                return BinaryNode(left_side.simplify(),right_side.simplify(),new_operator)
+        #now we simplify the right hand side. The method is similar      
+        def simplify_right(self):
+            right = self.rhs
+            operator = self.op_symbol
+            if isinstance(right, BinaryNode):
+                if precedence(operator) == precedence(right.op_symbol) + 1:
+                    left_side = BinaryNode(self.lhs,right.lhs,self.op_symbol)
+                    right_side = BinaryNode(self.lhs,right.rhs,self.op_symbol)
+                    new_operator= right.op_symbol
+                    return BinaryNode(left_side.simplify(),right_side.simplify(),new_operator)
+                else:
+                    return self
             else:
-                return self
-        else:
-           return self
-    
-    def simplify(self):
-        #We obtain our final result by first simplifying the left hand side and then simplifying the right hand side
-            return(simplify_right(simplify_left(self)))
-
-    
+               return self    
     
             
     def __str__(self):
@@ -586,7 +575,7 @@ class PowerNode(BinaryNode):
         super(PowerNode, self).__init__(lhs, rhs, '**')
         
     def abridge(self):
-    # We overwrite abridge such that c**0=1, c**1°c, 0**c=0 and 1**c=1 for all Constants and Variables c
+    # We overwrite abridge such that c**0=1, c**1=c, 0**c=0 and 1**c=1 for all Constants and Variables c
     # We calculate the power of two Constants
         lhs = self.lhs.abridge()
         rhs = self.rhs.abridge()
@@ -652,5 +641,3 @@ class negativeNode(UnaryNode):
 
     def __str__(self):
         return '-' + str(self.node)
-    
-# TODO: add more subclasses of Expression to represent operators, variables, functions, etc.
