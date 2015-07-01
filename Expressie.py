@@ -186,7 +186,7 @@ class Expression():
             while type(token) == str and len(token) != 1 \
                   and token != '**' and not isnumber(token):
 
-        tokens = post_tokenize(tokens, funclist)
+                tokens = post_tokenize(tokens, funclist)
 
 
         for token in tokens:
@@ -244,7 +244,6 @@ class Expression():
         while len(stack) > 0:
             output.append(stack.pop())
             
-        print(output)       
         # convert RPN to an actual expression tree
         for t in output:
             if t in oplist:
@@ -586,7 +585,7 @@ class PowerNode(BinaryNode):
         super(PowerNode, self).__init__(lhs, rhs, '**')
         
     def abridge(self):
-    # We overwrite abridge such that c**0=1, c**1°c, 0**c=0 and 1**c=1 for all Constants and Variables c
+    # We overwrite abridge such that c**0=1, c**1=c, 0**c=0 and 1**c=1 for all Constants and Variables c
     # We calculate the power of two Constants
         lhs = self.lhs.abridge()
         rhs = self.rhs.abridge()
