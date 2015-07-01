@@ -1,0 +1,105 @@
+\documentclass[12pt]{article}
+
+\usepackage[dutch]{babel}
+\usepackage{graphics}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{eurosym}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{tabto}
+\NumTabs{10}
+
+\begin{document}
+
+\begin{titlepage}
+\begin{center}
+
+\textsc{\LARGE Universiteit Utrecht}\\[1.6cm]
+
+\textsc{\Large Programmeren in de Wiskunde}\vspace{2pc}
+
+{\huge \bfseries Verslag Eindopdracht}
+\vspace{3pc}
+
+\begin{minipage}{0.7\textwidth}
+\begin{flushleft} \large
+\emph{Begeleider:} \\
+Emiel \textsc{Broeders} 
+\end{flushleft}
+\begin{flushleft} \large
+\emph{Auteurs:}\\
+Wessel \textsc{van Eeghen} \tab\#4007557\\
+Mathijs \textsc{de Lepper}  \tab\#3987949\\
+Jurriaan \textsc{Parie}  \tab\tab\#3938549
+\end{flushleft}
+\end{minipage}
+\begin{minipage}{0.4\textwidth}
+\end{minipage}
+\vspace{10pc} 
+
+\textsc{\Large Expressieboom}\\[4.0cm]
+{\large \today}
+\end{center}
+\end{titlepage}
+
+\newpage
+
+\section{Inleiding}
+
+
+\section{De Opdracht - Code}
+\subsection{Theoretische Achtergrond}
+Berekening, \textit{Shunting Yard}-algoritme, \textit{stack}, \textit{output}.\\ \newline
+De nieuwe klasses 
+
+\subsection{Aanpassingen}
+\subsubsection*{Bekende en Onbekende Functies - de Unaire Boom}
+Om niet alle elementen uit een berekening in een \textit{binaire boom} te hoeven plaatsen, hebben we voor de mogelijkheid om ook \textit{functies} mee te kunnen nemen in een berekening de \textit{unaire boom} geintroduceerd. Deze \textit{unaire boom} heeft slecht \'e\'en kind - hetgeen de functie evalueert - wat op zichzelf weer een \textit{unaire}- danwel een \textit{binaire boom} kan zijn. Dit laat dus toe dat berekeningen van \textit{functies} in \textit{functies} mogelijk zijn.
+\begin{align*}
+&\texttt{>>> Expression.fromString('sin x ** sinh cosh x')}\\
+&\texttt{sin(x) ** sinh(cosh(x))}
+\end{align*}
+
+\subsubsection*{Negatie}
+Het $-$ teken kent een dubbele betekenis. In het geval van \textit{negatie} vervangen we het $-$ teken in onze berekening door een $\sim$ om het voor het vervolgens als een functie beschouwen. 
+\begin{align*}
+&\texttt{>>> expr =  print(Expression.fromString('-x / y + -sin -x'))}\\
+&\texttt{-x / y + -sin(-x)}\\
+&\texttt{>>> print(expr.evaluate({'x':1.57, 'y':3.14}))}\\
+&\texttt{0.4999996829318346}
+\end{align*}
+
+\subsection{Extra's}
+
+\newpage
+\section{Taakverdeling}
+
+\begin{center}
+    \begin{tabular}{ | l | p{4cm}  | p{4cm} | p{4cm} |}
+    \hline
+    Dag & Jurriaan & Mathijs & Wessel \\ \hline
+    11 juni & Carri\`eremiddag & Carri\`eremiddag & Code begrijpen \\ \hline
+    16 juni & Presentatie + Code begrijpen & Presentatie + EvaluateFunction voor alles behalve variabelen & Nieuwe operatoren  $(-, *, /, **$ etc.$)$ \\ \hline
+    18 juni & Begin variabelen in de expressieboom & EvaluateFunction afmaken & Reduceren van haakjes \\ \hline
+    23 juni & Standaard en onbepaalde functies & Versimpeling en GitHub & Extra omschrijving + GitHub \\ \hline
+    25 juni & Functies afmaken, begin negatie & \texttt{4log(3xy)} is nu \texttt{4*log(3*x*y)} & Versimpeling van de boom en versimpeling van de uitdrukkingen \\ \hline
+    30 juni & Negatie is af en functies zonder haakjes & PEP8 (?) & Versimpelen is nu af \\
+    \hline
+    \end{tabular}
+\end{center}
+
+\section{Discussie}
+Waarom we ervoor gekozen hebben om bijvoorbeeld wel negatie te doen en niet differenti\"eren.
+
+
+\section{Reflectie}
+
+\begin{thebibliography}{9}
+\bibitem{ftcs}
+J.C. Tannehill; D.A. Anderson; R.H. Pletcher, Computational Fluid Mechanics and Heat Transfer (2nd ed.), Taylor \& Francis (1997).
+\end{thebibliography}
+
+
+\end{document}
