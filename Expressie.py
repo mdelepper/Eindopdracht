@@ -62,7 +62,7 @@ def post_tokenize(tokens, funclist):
                 token = tokens[i]
 
 
-        if tokens[i-1] == ')' and i != 0 and\
+        if tokens[i-1] == ')' and tokens[i] != ')' and i != 0 and\
            (token in funclist or (len(token)==1 and type(token) == str)):
             tokens.insert(i, '*')
 
@@ -178,6 +178,7 @@ class Expression():
         # this will contain Constant's and '+'s
         output = []
 
+        tokens = post_tokenize(tokens, funclist)
 
         for token in tokens:
             if isnumber(token):
