@@ -328,44 +328,43 @@ class BinaryNode(Expression):
 
     #We want to simplify our Expression tree, such that evaluating is extra easy
     #We want a tree that has the operators of highest precedence at the bottom and operators of lower precedence above
-    
-    #first we simplify the left hand side of the tree
-    def simplify_left(self):
-        left = self.lhs
-        operator = self.op_symbol
-        #when we are dealing with a subtree in the left node
-        if isinstance(left, BinaryNode):
-            #we only want to simplify the expression when the operator above is of higher precedence than the operator below
-            if precedence(operator) == precedence(left.op_symbol) + 1:
-                left_side = BinaryNode(left.lhs,self.rhs,self.op_symbol)
-                right_side = BinaryNode(left.rhs,self.rhs,self.op_symbol)
-                new_operator = left.op_symbol
-                #We have to simplify our outcome again, until everything is simplified
-                return BinaryNode(left_side.simplify(),right_side.simplify(),new_operator)
+    def simplify(self):  
+        
+        #first we simplify the left hand side of the tree
+        def simplify_left(self):
+            left = self.lhs
+            operator = self.op_symbol
+            #when we are dealing with a subtree in the left node
+            if isinstance(left, BinaryNode):
+                #we only want to simplify the expression when the operator above is of higher precedence than the operator below
+                if precedence(operator) == precedence(left.op_symbol) + 1:
+                    left_side = BinaryNode(left.lhs,self.rhs,self.op_symbol)
+                    right_side = BinaryNode(left.rhs,self.rhs,self.op_symbol)
+                    new_operator = left.op_symbol
+                    #We have to simplify our outcome again, until everything is simplified
+                    return BinaryNode(left_side.simplify(),right_side.simplify(),new_operator)
+                else:
+                    return self
             else:
                 return self
-        else:
-            return self
     
-    #now we simplify the right hand side. The method is similar      
-    
-    def simplify_right(self):
-        right = self.rhs
-        operator = self.op_symbol
-        if isinstance(right, BinaryNode):
-            if precedence(operator) == precedence(right.op_symbol) + 1:
-                left_side = BinaryNode(self.lhs,right.lhs,self.op_symbol)
-                right_side = BinaryNode(self.lhs,right.rhs,self.op_symbol)
-                new_operator= right.op_symbol
-                return BinaryNode(left_side.simplify(),right_side.simplify(),new_operator)
+        #now we simplify the right hand side. The method is similar      
+        def simplify_right(self):
+            right = self.rhs
+            operator = self.op_symbol
+            if isinstance(right, BinaryNode):
+                if precedence(operator) == precedence(right.op_symbol) + 1:
+                    left_side = BinaryNode(self.lhs,right.lhs,self.op_symbol)
+                    right_side = BinaryNode(self.lhs,right.rhs,self.op_symbol)
+                    new_operator= right.op_symbol
+                    return BinaryNode(left_side.simplify(),right_side.simplify(),new_operator)
+                else:
+                    return self
             else:
-                return self
-        else:
-           return self
-    
-    def simplify(self):
+               return self
+
         #We obtain our final result by first simplifying the left hand side and then simplifying the right hand side
-            return(simplify_right(simplify_left(self)))
+        return(simplify_right(simplify_left(self)))
 
     
     
@@ -643,4 +642,3 @@ class negativeNode(UnaryNode):
 
     def __str__(self):
         return '-' + str(self.node)
-    
