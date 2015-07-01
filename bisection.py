@@ -2,6 +2,7 @@ import math
 
 def findRoot(g, x, a, b, epsilon):
     m = (a+b)/2
+    
     f = eval('lambda x : ' + g)
     if ( (f(a)*f(b) < 0) and math.fabs(b-a) > epsilon):
         if (f(a)*f(m) < 0):
@@ -15,14 +16,14 @@ def findRoot(g, x, a, b, epsilon):
 def findAllRoots(g, x, a, b, epsilon):
     lijst = [[a,b]]
 
-    f = eval('lambda x : ' + g)
+    f = eval('lambda x:' + g)
     
     while(numRoots(lijst) < 4 and (lijst[0][1] - lijst[0][0]) > epsilon):
         lijst = halveerIntervallen(lijst)
 
     roots= []
     for j in lijst:
-        if f(float(j[0]))*f(float(j[1])) < 0 :
+        if f((j[0]))*f((j[1])) < 0 :
             roots.append(findRoot(g, x, j[0], j[1], epsilon))
     roots.sort()
     return roots

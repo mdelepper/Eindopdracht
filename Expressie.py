@@ -37,11 +37,11 @@ def tokenize(string, oplist, funclist):
 
     #special casting for negative numbers (so, numbers starting with -):
 
-def post_tokenize(tokens, funclist):
+def post_tokenize(tokens, funclist, oplist):
     i = 0
     for token in tokens:
         while type(token) == str and len(token) != 1 \
-              and token != '**' and not isnumber(token):
+              and token not in oplist and not isnumber(token):
             plaats = infunclist(token, funclist)
             
             if type(plaats) == list and not type(plaats) == bool:
@@ -61,9 +61,13 @@ def post_tokenize(tokens, funclist):
                 tokens[i] = token[0:-1]
                 token = tokens[i]
 
-
-        if tokens[i-1] == ')' and tokens[i] != ')' and i != 0 and\
-           (token in funclist or (len(token)==1 and type(token) == str)):
+        #if i= 0, then [i-1] will be the last element of the list, but we want
+        #subsequent characters.
+        ##we also do not want * between two ')'
+        ##or between )'and an operator
+        if i != 0 and tokens[i-1] == ')' and tokens[i] != ')' and \
+           (token in funclist or (len(token)==1 and type(token) == str)) \
+           and token not in oplist:
             tokens.insert(i, '*')
 
         i +=1
@@ -178,7 +182,7 @@ class Expression():
         # this will contain Constant's and '+'s
         output = []
 
-        tokens = post_tokenize(tokens, funclist)
+        tokens = post_tokenize(tokens, funclist, oplist)
 
         for token in tokens:
             if isnumber(token):
@@ -279,7 +283,7 @@ class Expression():
 
     """nog aanpassen!!!!"""
     def findRoots(self, variable_to_evaluate, a, b, epsilon):
-        return bisection.findRoot(str(self), variable_to_evaluate, \
+        return bisection.findAllRoots(str(self), variable_to_evaluate, \
                                       a, b, epsilon)
         
 
@@ -365,7 +369,8 @@ class BinaryNode(Expression):
     
     def simplify(self):
         #We obtain our final result by first simplifying the left hand side and then simplifying the right hand side
-            return(simplify_right(simplify_left(self)))
+            res = simplify_right(simplify_left(self))
+            return res
 
     
     
