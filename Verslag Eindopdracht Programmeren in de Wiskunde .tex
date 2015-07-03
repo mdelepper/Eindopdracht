@@ -66,7 +66,7 @@ We hebben de aangeleverde code waarin het mogelijk is om de operator \texttt{+} 
 
 \item \textbf{Het vertalen van een Expressie naar een string} \\
 Nu willen we ervoor zorgen dat overbodige haakje weggelaten worden. Hiervoor is het van belang dat we eerst de precedentie en associativiteit  van operatoren invoeren. Deze functies defini\"eren we buiten alle klassen om, zodat ze altijd en overal gelden. Optellen en aftrekken krijgen precedentie \'e\'en, vermenigvuldiging en deling precedentie twee, en machtsverheffing precedentie drie. Optelling en vermenigvuldiging krijgen associativiteit  nul waar aftrekken, delen en machtsverheffen associativiteit \'e\'en krijgen. Dit verschil wordt gemaakt omdat bijvoorbeeld wel geldt: \texttt{3+5 = 5+3}, maar niet \texttt{2/4 = 4/2}. Later in het project, wanneer we functies toe gaan voegen, voeren we de precedentie van vier in.  \\ \newline
-Nu kunnen we haakjes netjes weg gaan werken. Dit gebeurt in de definitie \texttt{\_\_str\_\_} binnen de klasse \texttt{BinaryNode}.  We hebben dan dus al te maken met expressiebomen. In de boom bepalen we in welke gevallen we wel en in welke gevallen we geen haakjes nodig hebben, afhankelijk van de precedentie en associativiteit van de operatoren. Dit doen we eerst voor de linker tak en dan voor de rechter tak, iedere keer per node (we scheiden links en rechts omdat er verschillen zijn tussen beide in het geval dat de associativiteit van de operatoren verschilt). We maken de methode af door links en rechts te combineren en recursief toe te passen.
+Nu kunnen we haakjes netjes weg gaan werken. Dit gebeurt in de definitie \texttt{\_\_str\_\_} binnen de klasse \texttt{BinaryNode}.  We hebben dan dus al te maken met expressiebomen. In de boom bepalen we in welke gevallen we wel en in welke gevallen we geen haakjes nodig hebben, afhankelijk van de precedentie en associativiteit van de operatoren. Dit doen we eerst voor de linkertak en dan voor de rechtertak (we scheiden links en rechts omdat er verschillen zijn tussen beide in het geval dat de associativiteit van de operatoren verschilt). We maken de methode af door links en rechts te combineren en recursief toe te passen.
 \end{itemize}
 \vspace{1pc}
 Met deze uitbreiding van de code kunnen we bijvoorbeeld de volgende berekening verwerken.
@@ -141,7 +141,7 @@ Met de \texttt{simplify}-functie veranderen we de structuur van een boom. De bed
 Ook hier betrekken we de precedentie van operatoren in ons systeem. Omdat we te maken hebben met bomen defini\"eren we de \texttt{simplify}-functie in klasse \texttt{BinaryNode}. Het idee is om operatoren met lage precedentie zo hoog mogelijk in de boom te zetten en om de operatoren met hogere precedentie naar beneden te duwen. Zo wordt  de uitdrukking \texttt{(2+3)*4} omgeschreven naar \texttt{(2*4 + 3*4)}. \\ \newline
 We gaan te werk door eerst de linkerkant van een \texttt{Node} te versimpelen en vervolgens de rechterkant. Zo hoef je niet alle combinaties van operatoren boven, links en rechts apart te behandelen. We stellen functies \texttt{simplify\_left} en \texttt{simplify\_right} op. Vervolgens maken we gebruik van recursie en combineren we de beide functies tot een eindresultaat. 
 \end{itemize}
-\vspace{1pc}
+\newpage
 \item \textbf{Bekende en Onbekende Functies - de Unaire Boom} \\
 Om niet alle elementen uit een berekening in een binaire boom te hoeven plaatsen, hebben we de unaire boom geintroduceerd. Dit biedt de mogelijkheid om ook functies in een berekening op te nemen. Deze unaire boom heeft slecht \'e\'en kind, hetgeen de functie evalueert. Dit kind kan zowel een binaire- danwel een unaire boom zijn. Zo is het mogelijk dat berekeningen met functies in functies ge\"evalueerd kunnen worden. Functies hebben allen hun eigen klasse gekregen, als subklasse van de \texttt{UnaryNode} klasse.
 \begin{align*}
@@ -158,12 +158,6 @@ Het $-$ teken kent een dubbele betekenis. In het geval van \textit{negatie} verv
 %&\texttt{0.4999996829318346}
 \end{align*}
 \end{itemize}
-
-\subsection*{Eigen Aanpassingen}
-\begin{itemize}
-\item \texttt{4log(sin(3xy))} is nu \texttt{4*log(sin(3*x*y))} ?
-\end{itemize}
-
 \newpage
 
 \section{Discussie}
