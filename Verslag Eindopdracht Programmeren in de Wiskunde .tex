@@ -65,9 +65,16 @@ We hebben de aangeleverde code waarin het mogelijk is om de operator \texttt{+} 
 
 \item \textbf{Het vertalen van een Expressie naar een string} \\
 Nu willen we ervoor zorgen dat overbodige haakje weggelaten worden. Hiervoor is het van belang dat we eerst de precedentie en associativiteit  van operatoren invoeren. Deze functies defini\"eren we buiten alle klassen om, zodat ze altijd en overal gelden. Optellen en aftrekken krijgen precedentie \'e\'en, vermenigvuldiging en deling precedentie twee, en machtsverheffing precedentie drie. Optelling en vermenigvuldiging krijgen associativiteit  nul waar aftrekken, delen en machtsverheffen associativiteit \'e\'en krijgen. Dit verschil wordt gemaakt omdat bijvoorbeeld wel geldt: \texttt{3+5 = 5+3}, maar niet \texttt{2/4 = 4/2}. Later in het project, wanneer we functies toe gaan voegen, voeren we de precedentie van vier in.  \\ \newline
-Nu kunnen we haakjes netjes weg gaan werken. Dit gebeurt in de definitie \texttt{\_\_str\_\_} binnen de klasse \texttt{BinaryNode}.  We hebben dan dus al te maken met expressiebomen. In de boom bepalen we in welke gevallen we wel en in welke gevallen we geen haakjes nodig hebben, afhankelijk van de precedentie en associativiteit van de operatoren. Dit doen we eerst voor de linker tak en dan voor de rechter tak, iedere keer per node (we scheiden links en rechts omdat er verschillen zijn tussen beide in het geval dat de associativiteit van de operatoren verschilt). We maken de methode af door links en rechts te combineren en recursief toe te passen.\\ \newline
-Een opmerking die we over deze functie kunnen maken is dat we in de definitie van \texttt{\_\_str\_\_} weer twee nieuwe definities voor links en rechts hebben gebruikt. Iets wat niet preferabel is. We hebben bij het ordenen en mooier maken van de code geprobeerd dit uit elkaar te halen, zodat we geen definities in definities hebben, maar dit gaf ineens een onverwachte foutmelding, die we zo tegen het eind van het project niet snel genoeg meer konden verhelpen. We hebben de oude methode dus toch maar aangehouden met het oog op pragmatisme. Zo werkt de code in ieder geval. Voor de functie simplify geldt exact hetzelfde.
-
+Nu kunnen we haakjes netjes weg gaan werken. Dit gebeurt in de definitie \texttt{\_\_str\_\_} binnen de klasse \texttt{BinaryNode}.  We hebben dan dus al te maken met expressiebomen. In de boom bepalen we in welke gevallen we wel en in welke gevallen we geen haakjes nodig hebben, afhankelijk van de precedentie en associativiteit van de operatoren. Dit doen we eerst voor de linker tak en dan voor de rechter tak, iedere keer per node (we scheiden links en rechts omdat er verschillen zijn tussen beide in het geval dat de associativiteit van de operatoren verschilt). We maken de methode af door links en rechts te combineren en recursief toe te passen.
+\end{itemize}
+\vspace{1pc}
+Met deze uitbreiding van de code kunnen we bijvoorbeeld de volgende expressie verwerken.
+\begin{align*}
+& \texttt{>>> a = Expression.fromString('(5 ** 3) + 33 / (11 + 4)')}\\
+& \texttt{>>> print(a)}\\
+& \texttt{5 ** 3 + 33 / (11 + 4)}
+\end{align*} \vspace{0.5pc}
+\begin{itemize}
 \item \textbf{Gelijke bomen} \\
 We willen twee bomen kunnen vergelijken. Dit doen we door in de verschillende klassen een overload van \texttt{def\_\_eq\_\_} te gebruiken. Op deze manier worden de twee expressiebomen vanaf een \textit{top-down} approach bekeken en vergeleken. 
 \begin{align*}
@@ -137,7 +144,7 @@ We gaan te werk door eerst de linkerkant van een \texttt{Node} te versimpelen en
 \end{itemize}
 
 \item \textbf{Bekende en Onbekende Functies - de Unaire Boom} \\
-Om niet alle elementen uit een berekening in een binaire boom te hoeven plaatsen, hebben we de unaire boom geintroduceerd. Dit biedt de mogelijkheid om ook functies in een berekening op te nemen. Deze unaire boom heeft slecht \'e\'en kind, hetgeen de functie evalueert. Dit kind kan zowel een binaire- danwel een unaire boom zijn. Zo is het mogelijk dat berekeningen met functies in functies ge\"evalueerd kunnen worden.
+Om niet alle elementen uit een berekening in een binaire boom te hoeven plaatsen, hebben we de unaire boom geintroduceerd. Dit biedt de mogelijkheid om ook functies in een berekening op te nemen. Deze unaire boom heeft slecht \'e\'en kind, hetgeen de functie evalueert. Dit kind kan zowel een binaire- danwel een unaire boom zijn. Zo is het mogelijk dat berekeningen met functies in functies ge\"evalueerd kunnen worden. Functies hebben allen hun eigen klasse gekregen, als subklasse van \texttt{UnaryNode}. 
 \begin{align*}
 &\texttt{>>> Expression.fromString('sin x ** sinh log x + 3')}\\
 &\texttt{sin(x) ** sinh(log(x)) + 3}
@@ -162,6 +169,10 @@ Het $-$ teken kent een dubbele betekenis. In het geval van \textit{negatie} verv
 
 \section{Discussie}
 Waarom we ervoor gekozen hebben om bijvoorbeeld wel negatie te doen en niet differenti\"eren.
+\begin{itemize}
+\item \textbf{Het vertalen van Expressie naar String}\\
+Een opmerking die we over deze functie kunnen maken is dat we in de definitie van \texttt{\_\_str\_\_} weer twee nieuwe definities voor links en rechts hebben gebruikt. Iets wat niet preferabel is. We hebben bij het ordenen en mooier maken van de code geprobeerd dit uit elkaar te halen, zodat we geen definities in definities hebben, maar dit gaf ineens een onverwachte foutmelding, die we zo tegen het eind van het project niet snel genoeg meer konden verhelpen. We hebben de oude methode dus toch maar aangehouden met het oog op pragmatisme. Zo werkt de code in ieder geval. Voor de functie simplify geldt exact hetzelfde.
+\end{itemize}
 
 
 \section{Reflectie}
