@@ -39,7 +39,8 @@ Jurriaan \textsc{Parie}  \tab\tab\#3938549
 \end{minipage}
 \vspace{10pc} 
 
-\textsc{\Large Expressieboom}\\[4.0cm]
+\textsc{\Large Expressieboom}\\[1.0cm]
+\textsc{https://github.com/mdelepper/Eindopdracht}\\[2.5cm]
 {\large \today}
 \end{center}
 \end{titlepage}
@@ -137,10 +138,10 @@ We wilden expressies korter kunnen opschrijven zodat overbodige operaties worden
 We plaatsten de definitie van abridge in de klassen \texttt{Expression}, zodat alle kind-objecten de functie automatisch ook kennen. Omdat de regels vervolgens per operator verschillend zijn, overschrijven we de de functie in deze \texttt{Node}-klassen. De versimpelingen die we hebben ingevoerd zijn: \texttt{+0} en \texttt{-0} worden weggelaten, \texttt{*1} en \texttt{*0} worden versimpeld, \texttt{0/}, en \texttt{/1} worden versimpeld en \texttt{/0} geeft voortaan een foutmelding. Verder wordt \texttt{**0} en \texttt{**1} ook versimpeld opgeschreven. \\ 
 \item \texttt{simplify} \\
 Met de \texttt{simplify}-functie veranderen we de structuur van een boom. De bedoeling is om iedere expressie in een boom te kunnen krijgen met een vergelijkbare structuur. Zo kun je makkelijker vergelijking tussen expressies maken en kun je snel en overzichtelijk zien wat het verschil is tussen twee uitdrukkingen. \\ \newline
-Ook hier betrekken we de precedentie van operatoren in ons systeem. Omdat we te maken hebben met bomen defini\"eren we de \texttt{simplify}-functie in klasse \texttt{BinaryNode}. Het idee is om operatoren met lage precedentie zo hoog mogelijk in de boom te zetten en om de operatoren met hogere precedentie naar beneden te duwen. Zo wordt  de uitdrukking \texttt{(2+3)*4} omgeschreven naar \texttt{(2*4 + 3*4)}. Helaas kunnen we de boom niet helemaal goed geordend krijgen, ingericht naar precedentie. \texttt{(2+3)**4} is immers niet gelijk aan \texttt{2**4 + 3**4}. Toch proberen we de  bomen zover mogelijk naar \'e\'en vaste structuur te brengen. \\ \newline
+Ook hier betrekken we de precedentie van operatoren in ons systeem. Omdat we te maken hebben met bomen defini\"eren we de \texttt{simplify}-functie in klasse \texttt{BinaryNode}. Het idee is om operatoren met lage precedentie zo hoog mogelijk in de boom te zetten en om de operatoren met hogere precedentie naar beneden te duwen. Zo wordt  de uitdrukking \texttt{(2+3)*4} omgeschreven naar \texttt{(2*4 + 3*4)}. \\ \newline
 We gaan te werk door eerst de linkerkant van een \texttt{Node} te versimpelen en vervolgens de rechterkant. Zo hoef je niet alle combinaties van operatoren boven, links en rechts apart te behandelen. We stellen functies \texttt{simplify\_left} en \texttt{simplify\_right} op. Vervolgens maken we gebruik van recursie en combineren we de beide functies tot een eindresultaat. 
 \end{itemize}
-
+\vspace{1pc}
 \item \textbf{Bekende en Onbekende Functies - de Unaire Boom} \\
 Om niet alle elementen uit een berekening in een binaire boom te hoeven plaatsen, hebben we de unaire boom geintroduceerd. Dit biedt de mogelijkheid om ook functies in een berekening op te nemen. Deze unaire boom heeft slecht \'e\'en kind, hetgeen de functie evalueert. Dit kind kan zowel een binaire- danwel een unaire boom zijn. Zo is het mogelijk dat berekeningen met functies in functies ge\"evalueerd kunnen worden. Functies hebben allen hun eigen klasse gekregen, als subklasse van \texttt{UnaryNode}. 
 \begin{align*}
@@ -166,12 +167,14 @@ Het $-$ teken kent een dubbele betekenis. In het geval van \textit{negatie} verv
 \newpage
 
 \section{Discussie}
-Waarom we ervoor gekozen hebben om bijvoorbeeld wel negatie te doen en niet differenti\"eren.
+Code-inhoudelijk zijn er een aantal opmerkingen en gebreken die boven water komen drijven. We bespreken ze  hieronder stuksgewijs. 
 \begin{itemize}
 \item \textbf{Het vertalen van Expressie naar String}\\
 Een opmerking die we over deze functie kunnen maken is dat we in de definitie van \texttt{\_\_str\_\_} weer twee nieuwe definities voor links en rechts hebben gebruikt. Iets wat niet preferabel is. We hebben bij het ordenen en mooier maken van de code geprobeerd dit uit elkaar te halen, zodat we geen definities in definities hebben, maar dit gaf ineens een onverwachte foutmelding, die we zo tegen het eind van het project niet snel genoeg meer konden verhelpen. We hebben de oude methode dus toch maar aangehouden met het oog op pragmatisme. Zo werkt de code in ieder geval. Voor de functie simplify geldt exact hetzelfde.
-\item \textbf{Versimpeling}\\
+\item \textbf{Versimpeling \texttt{abridge}}\\
 De reden dat ook de machten en de vermenigvuldiging en deling versimpeld worden, is niet alleen dat het mooier staat in een expressie, maar ook omdat je, als je een differentiatiefunctie wilt toepassen, het lelijk is als je een uitkomst met \texttt{x**0} of \texttt{x**1} krijgt. Op deze manier kun je makkelijker onderscheiden wanneer de afgeleide van een functie bijvoorbeeld een constante of zelfs nul geeft. Helaas zijn we niet meer toegekomen aan het defini\"eren van een differentiatiefunctie, maar alle benodigdheden liggen klaar om de uitbreiding te voltooien.
+\item \textbf{Versimpeling \texttt{simplify}}\\
+Helaas kunnen we de boom niet helemaal goed geordend krijgen, ingericht naar precedentie. \texttt{(2+3)**4} is immers niet gelijk aan \texttt{2**4 + 3**4}. Toch proberen we de  bomen zover mogelijk naar \'e\'en vaste structuur te brengen.
 
 \end{itemize}
 
