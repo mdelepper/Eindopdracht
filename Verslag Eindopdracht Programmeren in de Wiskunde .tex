@@ -74,7 +74,7 @@ We willen twee bomen kunnen vergelijken. Dit doen we door in de verschillende kl
 
 
 \subsubsection*{De klasse Variable}
-Om ook variabelen te ondersteunen hebben we een klasse \textit{Variable} geschreven, die een subklasse is van Constant. Hierin staat een constructor en een overload van  \textit{def \_\_str\_\_}, die zichzelf als waarde teruggeeft en een overload van \textit{def evaluate}. Als er een waarde is meegegeven voor de variabele, dan willen we deze waarde gebruiken in de berekening. Als dit niet het geval is, dan moet de variabele als variabele worden teruggegeven.
+Om ook variabelen te ondersteunen hebben we een klasse \textit{Variable} geschreven, die een subklasse is van \textit{Constant}. Hierin staat een constructor en een overload van  \textit{def \_\_str\_\_}, die zichzelf als waarde teruggeeft en een overload van \textit{def evaluate}. Als er een waarde is meegegeven voor de variabele, dan willen we deze waarde gebruiken in de berekening. Als dit niet het geval is, dan moet de variabele als variabele worden teruggegeven.
 \begin{align*}
 &\texttt{a = Expression.fromString('3sin(x)'))}\\
 &\texttt{>>> a.evaluate()}\\
