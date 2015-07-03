@@ -59,10 +59,10 @@ We hebben de aangeleverde code waarin het mogelijk is om de operator \texttt{+} 
 
 
 \item \textbf{Het vertalen van een Expressie naar een string} \\
-haakjes stukje?
+Nu willen we ervoor zorgen dat overbodige haakje weggelaten worden. Hiervoor is het van belang dat we eerst de precedentie en associativiteit  van operatoren invoeren. Deze functies defini\"eren we buiten alle klassen om, zodat ze altijd en overal gelden. Optellen en aftrekken krijgen precedentie één, vermenigvuldiging en deling precedentie twee, en machtsverheffing precedentie drie. Optelling en vermenigvuldiging krijgen een associativiteit van nul waar aftrekken, delen en machtsverheffen associativiteit één krijgen. Dit verschil wordt gemaakt omdat bijvoorbeeld wel geldt: \texttt{3+5 = 5+3}, maar niet \texttt{2/4 = 4/2}. Later in het project, wanneer we functies toe gaan voelen, voeren we nog de precedentie van vier in.  \\ \newline
 
 \item \textbf{Gelijke bomen} \\
-We willen twee bomen kunnen vergelijken. Dit doen we door in de verschillende klassen een overload van \texttt{def\_\_eq\_\_} te gebruiken. Op deze manier worden de twee expressiebomen vanaf een \textit{top-down} approach bekeken en vergeleken.
+We willen twee bomen kunnen vergelijken. Dit doen we door in de verschillende klassen een overload van \texttt{def\_\_eq\_\_} te gebruiken. Op deze manier worden de twee expressiebomen vanaf een \textit{top-down} approach bekeken en vergeleken. 
 \begin{align*}
 &\texttt{a = Expression.fromString('3sin(x)'))}\\
 &\texttt{>>> print(a)}\\
