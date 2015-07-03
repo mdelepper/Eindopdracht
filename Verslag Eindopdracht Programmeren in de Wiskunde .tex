@@ -68,7 +68,7 @@ Nu willen we ervoor zorgen dat overbodige haakje weggelaten worden. Hiervoor is 
 Nu kunnen we haakjes netjes weg gaan werken. Dit gebeurt in de definitie \texttt{\_\_str\_\_} binnen de klasse \texttt{BinaryNode}.  We hebben dan dus al te maken met expressiebomen. In de boom bepalen we in welke gevallen we wel en in welke gevallen we geen haakjes nodig hebben, afhankelijk van de precedentie en associativiteit van de operatoren. Dit doen we eerst voor de linker tak en dan voor de rechter tak, iedere keer per node (we scheiden links en rechts omdat er verschillen zijn tussen beide in het geval dat de associativiteit van de operatoren verschilt). We maken de methode af door links en rechts te combineren en recursief toe te passen.
 \end{itemize}
 \vspace{1pc}
-Met deze uitbreiding van de code kunnen we bijvoorbeeld de volgende expressie verwerken.
+Met deze uitbreiding van de code kunnen we bijvoorbeeld de volgende berekening verwerken.
 \begin{align*}
 & \texttt{>>> a = Expression.fromString('(5 ** 3) + 33 / (11 + 4)')}\\
 & \texttt{>>> print(a)}\\
@@ -76,7 +76,7 @@ Met deze uitbreiding van de code kunnen we bijvoorbeeld de volgende expressie ve
 \end{align*} \vspace{0.5pc}
 \begin{itemize}
 \item \textbf{Gelijke bomen} \\
-We willen twee bomen kunnen vergelijken. Dit doen we door in de verschillende klassen een overload van \texttt{def\_\_eq\_\_} te gebruiken. Op deze manier worden de twee expressiebomen vanaf een \textit{top-down} approach bekeken en vergeleken. 
+We willen twee bomen kunnen vergelijken. Dit doen we door in de verschillende klassen een overload van \texttt{def\_\_eq\_\_} te gebruiken. Op deze manier worden de twee expressiebomen vanaf een \textit{top-down approach} bekeken en vergeleken. 
 \begin{align*}
 &\texttt{a = Expression.fromString('3sin(x)'))}\\
 &\texttt{>>> print(a)}\\
@@ -90,7 +90,7 @@ We willen twee bomen kunnen vergelijken. Dit doen we door in de verschillende kl
 
 
 \item \textbf{De klasse Variable} \\
-Om ook variabelen te ondersteunen hebben we een klasse \textit{Variable} geschreven, als subklasse van \textit{Constant}. Hierin staat een constructor en een overload van  \texttt{def \_\_str\_\_}, die zichzelf als waarde teruggeeft en een overload van \texttt{def evaluate}. Als er een waarde is meegegeven voor de variabele, dan willen we deze waarde gebruiken in de berekening. Als dit niet het geval is, dan moet de variabele als variabele worden teruggegeven.
+Om ook variabelen te ondersteunen hebben we een klasse \texttt{Variable} geschreven, als subklasse van de\texttt{Constant} klasse. Hierin staat een constructor en een overload van  \texttt{def \_\_str\_\_}, die zichzelf als waarde teruggeeft en een overload van de definitie \texttt{evaluate}. Als er een waarde is meegegeven voor de variabele, dan willen we deze waarde gebruiken in de berekening. Als dit niet het geval is, dan moet de variabele als variabele worden teruggegeven.
 \begin{align*}
 &\texttt{a = Expression.fromString('3sin(x)'))}\\
 &\texttt{>>> a.evaluate()}\\
@@ -100,9 +100,9 @@ Om ook variabelen te ondersteunen hebben we een klasse \textit{Variable} geschre
 \end{align*}
 
 \item \textbf{Evaluate}\\
-In de bovenstaande code is te zien hoe we de numerieke waarde van een expressie kunnen berekenen. Dit doen we door middel van de functie \texttt{evaluate}. In \texttt{Expressie}, de hoofd-/superklasse van de code, hoeft er nog niks te gebeuren. We gebruiken daarom een \texttt{pass} en overloaden de methode in de subklassen van \texttt{Expressie}. Zo willen we bijvoorbeeld bij de klasse \texttt{BinaryNode} dat (recursief) de linker- en rechterkant worden ge\"{e}valueerd. Afhankelijk van wat het zogeheten \textit{child} teruggeeft, willen we een uiteindelijke waarde of expressie teruggeven aan de oproep. Dit houdt bijvoorbeeld in dat een constante zijn eigen waarde teruggeeft en een variabele \texttt{x} geeft \'{o}f \texttt{x} terug \'{o}f de waarde die voor \texttt{x} is meegegeven in de vorm van een \texttt{dictionary}.
+In de bovenstaande code is te zien hoe we de numerieke waarde van een expressie kunnen berekenen. Dit doen we door middel van de functie \texttt{evaluate}. In \texttt{Expressie}, de hoofd-/superklasse van de code, hoeft er nog niks te gebeuren. We gebruiken daarom een \texttt{pass} en overloaden de methode in de subklassen van \texttt{Expressie}. Zo willen we bijvoorbeeld bij de klasse \texttt{BinaryNode} dat (recursief) de linker- en rechterkant worden ge\"{e}valueerd. Afhankelijk van wat de zogeheten \textit{child} teruggeeft, willen we een uiteindelijke waarde of expressie teruggeven aan de oproep. Dit houdt in dat bijvoorbeeld een constante zijn eigen waarde teruggeeft en een variabele \texttt{x} geeft \'{o}f \texttt{x} terug \'{o}f de waarde die voor \texttt{x} is meegegeven in de vorm van een \texttt{dictionary}.
 \end{itemize}
-\vspace{2pc}
+\vspace{1pc}
 
 \subsection*{Extra Aanpassingen}
 \begin{itemize}
@@ -122,7 +122,7 @@ Aangezien sommige functies meerdere variabelen gebruiken, willen we het mogelijk
 \end{align*}
 
 \item \textbf{Nulpunten vinden}\\
-Het leek ons ook wel mooi om nulpunten te kunnen vinden van (simpele) expressies/functies. Dit hebben we gedaan door middel van het importeren van het programma \textit{bisection}. Dit programma was een inleveropdracht en het leek ons wel mooi om hier iets mee te doen. Hier volgt een klein voorbeeldje:
+Het leek ons ook wel mooi om nulpunten te kunnen vinden van (simpele) expressies/functies. Dit hebben we gedaan door middel van het importeren van het programma \texttt{bisection}. Dit programma was een inleveropdracht en het leek ons wel mooi om hier iets mee te doen. Hier volgt een klein voorbeeldje.
 \begin{align*}
 &\texttt{b = Expression.fromString('x*x - 4')}\\
 &\texttt{>>> b.findRoots('x', -3, 4, 0.001)}\\
@@ -134,9 +134,7 @@ Onder het kopje Versimpeling hebben wij twee functies toegevoegd: \texttt{abridg
 \begin{itemize}
 \item \texttt{abridge} \\
 We wilden expressies korter kunnen opschrijven zodat overbodige operaties worden weggelaten. Hiervoor hebben we een aparte functie gedefinieerd. Deze hebben we gedefinieerd in de klasse \texttt{Expression}, waarna we hem volledig overschrijven in de  subklassen \texttt{AddNode}, \texttt{SubNode}, \texttt{MultiplyNode}, \texttt{DivisionNode} en \texttt{PowerNode}. Het gaat erom dat we bijvoorbeeld een expressie als \texttt{5*3+0} gewoon terugkrijgen als \texttt{5*3}. Hetzelfde geldt voor bijvoorbeeld \texttt{x/1}, dat wordt \texttt{x}. 
-We plaatsten de definitie van abridge in de klassen \texttt{Expression}, zodat alle kind-objecten de functie automatisch ook kennen. Omdat de regels vervolgens per operator verschillend zijn, overschrijven we de de functie in deze \texttt{Node}-klassen. De versimpelingen die we hebben ingevoerd zijn: \texttt{+0} en \texttt{-0} worden weggelaten, \texttt{*1} en \texttt{*0} worden versimpeld, \texttt{0/}, en \texttt{/1} worden versimpeld en \texttt{/0} geeft voortaan een foutmelding. Verder wordt \texttt{**0} en \texttt{**1} ook versimpeld opgeschreven. \\ \newline
-De reden dat ook de machten en de vermenigvuldiging en deling versimpeld worden, is niet alleen dat het mooier staat in een expressie, maar ook omdat je, als je een differentiatiefunctie wilt toepassen, het lelijk is als je een uitkomst met \texttt{x**0} of \texttt{x**1} krijgt. Op deze manier kun je makkelijker onderscheiden wanneer de afgeleide van een functie bijvoorbeeld een constante of zelfs nul geeft. Helaas zijn we niet meer toegekomen aan het defini\"eren van een differentiatiefunctie, maar alle benodigdheden liggen klaar om de uitbreiding te voltooien.
-
+We plaatsten de definitie van abridge in de klassen \texttt{Expression}, zodat alle kind-objecten de functie automatisch ook kennen. Omdat de regels vervolgens per operator verschillend zijn, overschrijven we de de functie in deze \texttt{Node}-klassen. De versimpelingen die we hebben ingevoerd zijn: \texttt{+0} en \texttt{-0} worden weggelaten, \texttt{*1} en \texttt{*0} worden versimpeld, \texttt{0/}, en \texttt{/1} worden versimpeld en \texttt{/0} geeft voortaan een foutmelding. Verder wordt \texttt{**0} en \texttt{**1} ook versimpeld opgeschreven. \\ 
 \item \texttt{simplify} \\
 Met de \texttt{simplify}-functie veranderen we de structuur van een boom. De bedoeling is om iedere expressie in een boom te kunnen krijgen met een vergelijkbare structuur. Zo kun je makkelijker vergelijking tussen expressies maken en kun je snel en overzichtelijk zien wat het verschil is tussen twee uitdrukkingen. \\ \newline
 Ook hier betrekken we de precedentie van operatoren in ons systeem. Omdat we te maken hebben met bomen defini\"eren we de \texttt{simplify}-functie in klasse \texttt{BinaryNode}. Het idee is om operatoren met lage precedentie zo hoog mogelijk in de boom te zetten en om de operatoren met hogere precedentie naar beneden te duwen. Zo wordt  de uitdrukking \texttt{(2+3)*4} omgeschreven naar \texttt{(2*4 + 3*4)}. Helaas kunnen we de boom niet helemaal goed geordend krijgen, ingericht naar precedentie. \texttt{(2+3)**4} is immers niet gelijk aan \texttt{2**4 + 3**4}. Toch proberen we de  bomen zover mogelijk naar \'e\'en vaste structuur te brengen. \\ \newline
@@ -172,6 +170,9 @@ Waarom we ervoor gekozen hebben om bijvoorbeeld wel negatie te doen en niet diff
 \begin{itemize}
 \item \textbf{Het vertalen van Expressie naar String}\\
 Een opmerking die we over deze functie kunnen maken is dat we in de definitie van \texttt{\_\_str\_\_} weer twee nieuwe definities voor links en rechts hebben gebruikt. Iets wat niet preferabel is. We hebben bij het ordenen en mooier maken van de code geprobeerd dit uit elkaar te halen, zodat we geen definities in definities hebben, maar dit gaf ineens een onverwachte foutmelding, die we zo tegen het eind van het project niet snel genoeg meer konden verhelpen. We hebben de oude methode dus toch maar aangehouden met het oog op pragmatisme. Zo werkt de code in ieder geval. Voor de functie simplify geldt exact hetzelfde.
+\item \textbf{Versimpeling}\\
+De reden dat ook de machten en de vermenigvuldiging en deling versimpeld worden, is niet alleen dat het mooier staat in een expressie, maar ook omdat je, als je een differentiatiefunctie wilt toepassen, het lelijk is als je een uitkomst met \texttt{x**0} of \texttt{x**1} krijgt. Op deze manier kun je makkelijker onderscheiden wanneer de afgeleide van een functie bijvoorbeeld een constante of zelfs nul geeft. Helaas zijn we niet meer toegekomen aan het defini\"eren van een differentiatiefunctie, maar alle benodigdheden liggen klaar om de uitbreiding te voltooien.
+
 \end{itemize}
 
 
