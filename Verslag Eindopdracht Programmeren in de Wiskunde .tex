@@ -90,7 +90,7 @@ Zoals in het voorgaande stukje te zien is, kunnen we numerieke waarden van expre
 
 \item \textbf{Expression from String}
 We hebben een functie \textit{post\_tokenize} toegevoegd. Deze maakt het mogelijk om bij het gebruik van \textit{ExpressionfromString} een functie in te voeren zonder *-tekens te gebruiken tussen getallen en variabelen/functies. Om te voorkomen dat bijvoorbeeld \textit{sin} wordt opgebroken in \textit{s*i*n}, hebben we een methode \textit{infunclist} gedefin\"{i}eerd. Hierdoor kunnen we met een \textit{bool} checken of een deel van de string een bekende functie is of niet. Uiteindelijk kunnen we onder andere het volgende doen:
-\begin{align*}
+\begin{align*}g
 &\texttt{>>> b = Expression.fromString('3xylog(ab) +5'))}\\
 &\texttt{>>> print(b)}\\
 &\texttt{3 * x * y * log(a * b) + 5}
