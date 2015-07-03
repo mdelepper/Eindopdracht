@@ -154,12 +154,11 @@ Het $-$ teken kent een dubbele betekenis. In het geval van \textit{negatie} verv
 \begin{align*}
 &\texttt{>>> expr =  print(Expression.fromString('-x / y + -sin -x'))}\\
 &\texttt{-x / y + -sin(-x)}\\
-%&\texttt{>>> print(expr.evaluate({'x':1.57, 'y':3.14}))}\\
-%&\texttt{0.4999996829318346}
+&\texttt{>>> print(expr.evaluate({'x':1.57, 'y':3.14}))}\\
+&\texttt{0.4999996829318346}
 \end{align*}
 \end{itemize}
-\newpage
-
+\vspace{1pc}
 \section{Discussie}
 Code-inhoudelijk zijn er een aantal opmerkingen en gebreken die boven water komen drijven. We bespreken ze  hieronder stuksgewijs. 
 \begin{itemize}
@@ -169,10 +168,10 @@ Een opmerking die we over deze functie kunnen maken is dat we in de definitie va
 De reden dat ook de machten en de vermenigvuldiging en deling versimpeld worden, is niet alleen dat het mooier staat in een expressie, maar ook omdat je, als je een differentiatiefunctie wilt toepassen, het lelijk is als je een uitkomst met \texttt{x**0} of \texttt{x**1} krijgt. Op deze manier kun je makkelijker onderscheiden wanneer de afgeleide van een functie bijvoorbeeld een constante of zelfs nul geeft. Helaas zijn we niet meer toegekomen aan het defini\"eren van een differentiatiefunctie, maar alle benodigdheden liggen klaar om de uitbreiding te voltooien.
 \item \textbf{Versimpeling \texttt{simplify}}\\
 Helaas kunnen we de boom niet helemaal goed geordend krijgen, ingericht naar precedentie. \texttt{(2+3)**4} is immers niet gelijk aan \texttt{2**4 + 3**4}. Toch proberen we de  bomen zover mogelijk naar \'e\'en vaste structuur te brengen.
-
 \end{itemize}
-
-
+\vspace{0.5pc}
+Verder merken we op dat er een aantal versimpelingen zijn die we makkelijk hadden kunnen toevoegen. Dit geldt voor wel meer functionaliteiten; als we meer tijd hadden gehad dan hadden we dit kunnen implementeren in ons programma. Een mogelijke vervolgstap zou bijvoorbeeld differenti\"eren of numeriek integreren zijn geweest. Uiteindelijk hebben we een grens getrokken en zijn we tevreden met alle mogelijkheden die deze code ons biedt. 
+\vspace{1pc}
 \section{Reflectie}
 De samenwerking is ontzettend goed verlopen. \textit{Github} was de enige die af en toe niet helemaal mee wilde werken, maar dat lag deels aan het feit dat we er nog niet zo heel lang mee bekend waren. Een grove verdeling van het werk is als volgt:
 
