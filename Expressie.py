@@ -649,8 +649,7 @@ class tanNode(UnaryNode):
 
 class logNode(UnaryNode):
     """Represents the math.log function"""
-
-    def __init(self, node):
+    def __init__(self, node):
         super(logNode, self).__init__(node, 'log')
 
 
