@@ -54,6 +54,7 @@ Jurriaan \textsc{Parie}  \tab\tab\#3938549
 Berekening, \textit{Shunting Yard}-algoritme, \textit{stack}, \textit{output}.\\ \newline
 De nieuwe klasses 
 
+
 \subsection{Aanpassingen}
 
 \subsubsection*{Het vertalen van een Expressie naar een string}
@@ -68,10 +69,10 @@ Om ook variabelen te ondersteunen hebben we een klasse \textit{Variable} geschre
 
 
 \subsubsection*{Bekende en Onbekende Functies - de Unaire Boom}
-Om niet alle elementen uit een berekening in een \textit{binaire boom} te hoeven plaatsen, hebben we voor de mogelijkheid om ook \textit{functies} mee te kunnen nemen in een berekening de \textit{unaire boom} geintroduceerd. Deze \textit{unaire boom} heeft slecht \'e\'en kind - hetgeen de functie evalueert - wat op zichzelf weer een \textit{unaire}- danwel een \textit{binaire boom} kan zijn. Dit laat dus toe dat berekeningen van \textit{functies} in \textit{functies} mogelijk zijn.
+Om niet alle elementen uit een berekening in een \textit{binaire boom} te hoeven plaatsen, hebben we de \textit{unaire boom} geintroduceerd. Dit biedt de mogelijkheid om ook \textit{functies} in een berekening op te nemen. Deze \textit{unaire boom} heeft slecht \'e\'en kind - hetgeen de functie evalueert - wat op zichzelf weer een \textit{unaire}- danwel een \textit{binaire boom} kan zijn. Dit laat dus toe dat berekeningen van \textit{functies} in \textit{functies} mogelijk zijn.
 \begin{align*}
-&\texttt{>>> Expression.fromString('sin x ** sinh cosh x')}\\
-&\texttt{sin(x) ** sinh(cosh(x))}
+&\texttt{>>> Expression.fromString('sin x ** sinh log x')}\\
+&\texttt{sin(x) ** sinh(log(x))}
 \end{align*}
 
 \subsubsection*{Negatie}
@@ -97,7 +98,8 @@ Het $-$ teken kent een dubbele betekenis. In het geval van \textit{negatie} verv
     18 juni & Begin variabelen in de expressieboom & EvaluateFunction afmaken & Reduceren van haakjes \\ \hline
     23 juni & Standaard en onbepaalde functies & Versimpeling en GitHub & Extra omschrijving + GitHub \\ \hline
     25 juni & Functies afmaken, begin negatie & \texttt{4log(sin(3xy))} is nu \texttt{4*log(sin(3*x*y))} & Versimpeling van de boom en versimpeling van de uitdrukkingen \\ \hline
-    30 juni & Negatie is af en functies zonder haakjes & Bisection ge\"{i}mporteerd (werkt voor simpele functies) en PEP8 & Versimpelen is nu af \\
+    30 juni & Negatie is af en functies zonder haakjes & Bisection ge\"{i}mporteerd (werkt voor simpele functies) en PEP8 & Versimpelen is nu af \\ \hline
+    3 juli & Verslag & Verslag & Verslag \\
     \hline
     \end{tabular}
 \end{center}
@@ -110,7 +112,7 @@ Waarom we ervoor gekozen hebben om bijvoorbeeld wel negatie te doen en niet diff
 
 \begin{thebibliography}{9}
 \bibitem{ftcs}
-J.C. Tannehill; D.A. Anderson; R.H. Pletcher, Computational Fluid Mechanics and Heat Transfer (2nd ed.), Taylor \& Francis (1997).
+https://nl.wikipedia.org/wiki/Shunting-yardalgoritme
 \end{thebibliography}
 
 
