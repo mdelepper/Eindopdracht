@@ -143,14 +143,14 @@ We gaan te werk door eerst de linkerkant van een \texttt{Node} te versimpelen en
 \end{itemize}
 \vspace{1pc}
 \item \textbf{Bekende en Onbekende Functies - de Unaire Boom} \\
-Om niet alle elementen uit een berekening in een binaire boom te hoeven plaatsen, hebben we de unaire boom geintroduceerd. Dit biedt de mogelijkheid om ook functies in een berekening op te nemen. Deze unaire boom heeft slecht \'e\'en kind, hetgeen de functie evalueert. Dit kind kan zowel een binaire- danwel een unaire boom zijn. Zo is het mogelijk dat berekeningen met functies in functies ge\"evalueerd kunnen worden. Functies hebben allen hun eigen klasse gekregen, als subklasse van \texttt{UnaryNode}. 
+Om niet alle elementen uit een berekening in een binaire boom te hoeven plaatsen, hebben we de unaire boom geintroduceerd. Dit biedt de mogelijkheid om ook functies in een berekening op te nemen. Deze unaire boom heeft slecht \'e\'en kind, hetgeen de functie evalueert. Dit kind kan zowel een binaire- danwel een unaire boom zijn. Zo is het mogelijk dat berekeningen met functies in functies ge\"evalueerd kunnen worden. Functies hebben allen hun eigen klasse gekregen, als subklasse van de \texttt{UnaryNode} klasse.
 \begin{align*}
 &\texttt{>>> Expression.fromString('sin x ** sinh log x + 3')}\\
 &\texttt{sin(x) ** sinh(log(x)) + 3}
 \end{align*}
 
 \item \textbf{Negatie} \\
-Het $-$ teken kent een dubbele betekenis. In het geval van \textit{negatie} vervangen we het $-$ teken in onze berekening door een $\sim$ om het vervolgens als een functie beschouwen. 
+Het $-$ teken kent een dubbele betekenis. In het geval van \textit{negatie} vervangen we het $-$ teken in onze berekening door een $\sim$ om het vervolgens als een functie te beschouwen. 
 \begin{align*}
 &\texttt{>>> expr =  print(Expression.fromString('-x / y + -sin -x'))}\\
 &\texttt{-x / y + -sin(-x)}\\
@@ -196,8 +196,8 @@ De samenwerking is ontzettend goed verlopen. \textit{Github} was de enige die af
     \hline
     \end{tabular}
 \end{center}
-Het is echter niet zo dat iedereen alleen zijn eigen stukje heeft gezeten. We hebben regelmatig samen naar stukken code gekeken als we er niet uitkwamen en ook gewoon met elkaar overlegd tijdens het schrijven van de code. Ook hebben we overlegd over welke extra\'{}s we wilden programmeren. Zo hebben we gekozen voor een aantal functionele extra's{} die op het lijstje stonden, zoals bijvoorbeeld \textit{versimpeling} en \textit{gedeeltelijke evaluatie} en hebben we \textit{ExpressionfromString} aangepast en een functie voor nulpunten toegevoegd. \\
-Gedurende de periode waarin we aan de opdracht hebben gezeten, kregen we steeds meer begrip voor hoe het programma in elkaar zat en in elkaar moest zitten. In eerste instantie moesten we uitvinden hoe \textit{de template} in elkaar zat en waar we op voort moesten bouwen. Tijdens het eerste werkcollege dat we aan \textit{Expressie} werkten, heeft Wessel bijvoorbeeld een speedcursus \textit{Shunting-yardalgoritme} gegeven. Hierna was de code al een stuk duidelijker. Naarmate we de code meer en meer eigen hadden gemaakt, werden we ook steeds handiger in het debuggen van het programma. Af en toe kwamen we er niet helemaal uit en hebben we wat hulp gehad van de werkcollegebegeleiders, voornamelijk van degene die ons heeft begeleid; Emile. \\
+Het is echter niet zo dat iedereen alleen zijn eigen stukje heeft gezeten. We hebben regelmatig samen naar stukken code gekeken als we er niet uitkwamen en ook gewoon met elkaar overlegd tijdens het schrijven van de code. Ook hebben we overlegd over welke extra\'{}s we wilden programmeren. Zo hebben we gekozen voor een aantal functionele extra's{} die op het lijstje stonden, zoals bijvoorbeeld \textit{Versimpeling} en \textit{Gedeeltelijke Evaluatie} en hebben we \texttt{Expression.fromString} aangepast en een functie voor nulpunten toegevoegd. \\ \newline
+Gedurende de periode waarin we aan de opdracht hebben gezeten, kregen we steeds meer begrip voor hoe het programma in elkaar zat en in elkaar moest zitten. In eerste instantie moesten we uitvinden hoe \textit{de template} in elkaar zat en waar we op voort moesten bouwen. Tijdens het eerste werkcollege dat we aan \texttt{Expressie} werkten, heeft Wessel bijvoorbeeld een speedcursus \textit{Shunting-yardalgoritme} gegeven. Hierna was de code al een stuk duidelijker. Naarmate we de code meer en meer eigen hadden gemaakt, werden we ook steeds handiger in het debuggen van het programma. Af en toe kwamen we er niet helemaal uit en hebben we wat hulp gehad van de werkcollegebegeleiders, voornamelijk van degene die ons heeft begeleid: Emile. \\ \newline
 Uiteindelijk hebben we naar ons idee een mooi resultaat geleverd en kunnen we terugkijken op een goede samenwerking. Het zou voor ons waarschijnlijk handig zijn als we volgende keer iets beter overweg zouden kunnen met \textit{Github}. Het heeft ons af en toe wel wat gedoe opgeleverd als het \textit{mergen} niet helemaal wilde lukken. Soms werkte de code dan \"{}opeens\"{} niet meer zo goed en moesten we op zoek gaan naar waar de fout zat. Uiteindelijk is het allemaal goed gekomen en zijn we blij met het huidige resultaat.
 
 
