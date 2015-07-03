@@ -49,21 +49,18 @@ Jurriaan \textsc{Parie}  \tab\tab\#3938549
 \section{Inleiding}
 
 
-\section{De Opdracht - Code}
-\subsection{Theoretische Achtergrond}
-Berekening, \textit{Shunting Yard}-algoritme, \textit{stack}, \textit{output}.\\ \newline
-De nieuwe klasses 
+\section{De Opdracht}
+We hebben de aangeleverde code aanzienlijk uitgebreid. Naast de lijst met standaard functionaliteiten hebben we ook elementen toegevoegd uit de \textit{Extra}-lijst. Daarnaast hebben we nog een aantal (eigen) functies buiten de lijst om toegevoegd. 
 
+\subsection*{Standaars Aanpassingen}
 
-\subsection{Aanpassingen}
-
-
+\subsection*{Extra Aanpassingen}
 \begin{itemize}
 \item \textbf{Het vertalen van een Expressie naar een string} \\
 haakjes stukje?
 
 \item \textbf{Gelijke bomen} \\
-We willen twee bomen kunnen vergelijken. Dit doen we door in de verschillende klassen een overload van \texttt{def\_\_eq\_\_} te gebruiken. Op deze manier worden de twee expressiebomen vanaf een top-down approach bekeken en vergeleken.
+We willen twee bomen kunnen vergelijken. Dit doen we door in de verschillende klassen een overload van \texttt{def\_\_eq\_\_} te gebruiken. Op deze manier worden de twee expressiebomen vanaf een \textit{top-down} approach bekeken en vergeleken.
 \begin{align*}
 &\texttt{a = Expression.fromString('3sin(x)'))}\\
 &\texttt{>>> print(a)}\\
@@ -76,7 +73,7 @@ We willen twee bomen kunnen vergelijken. Dit doen we door in de verschillende kl
 \end{align*}
 
 \item \textbf{De klasse Variable} \\
-Om ook variabelen te ondersteunen hebben we een klasse \textit{Variable} geschreven, die een subklasse is van \textit{Constant}. Hierin staat een constructor en een overload van  \textit{def \_\_str\_\_}, die zichzelf als waarde teruggeeft en een overload van \textit{def evaluate}. Als er een waarde is meegegeven voor de variabele, dan willen we deze waarde gebruiken in de berekening. Als dit niet het geval is, dan moet de variabele als variabele worden teruggegeven.
+Om ook variabelen te ondersteunen hebben we een klasse \textit{Variable} geschreven, als subklasse van \textit{Constant}. Hierin staat een constructor en een overload van  \texttt{def \_\_str\_\_}, die zichzelf als waarde teruggeeft en een overload van \texttt{def evaluate}. Als er een waarde is meegegeven voor de variabele, dan willen we deze waarde gebruiken in de berekening. Als dit niet het geval is, dan moet de variabele als variabele worden teruggegeven.
 \begin{align*}
 &\texttt{a = Expression.fromString('3sin(x)'))}\\
 &\texttt{>>> a.evaluate()}\\
@@ -87,24 +84,25 @@ Om ook variabelen te ondersteunen hebben we een klasse \textit{Variable} geschre
 
 
 \item \textbf{Bekende en Onbekende Functies - de Unaire Boom} \\
-Om niet alle elementen uit een berekening in een \textit{binaire boom} te hoeven plaatsen, hebben we de \textit{unaire boom} geintroduceerd. Dit biedt de mogelijkheid om ook \textit{functies} in een berekening op te nemen. Deze \textit{unaire boom} heeft slecht \'e\'en kind - hetgeen de functie evalueert - wat op zichzelf weer een \textit{unaire}- danwel een \textit{binaire boom} kan zijn. Dit laat dus toe dat berekeningen van \textit{functies} in \textit{functies} mogelijk zijn.
+Om niet alle elementen uit een berekening in een binaire boom te hoeven plaatsen, hebben we de unaire boom geintroduceerd. Dit biedt de mogelijkheid om ook functies in een berekening op te nemen. Deze unaire boom heeft slecht \'e\'en kind, hetgeen de functie evalueert. Dit kind kan zowel een binaire- danwel een unaire boom zijn. Zo is het mogelijk dat berekeningen met functies in functies ge\"evalueerd kunnen worden.
 \begin{align*}
-&\texttt{>>> Expression.fromString('sin x ** sinh log x')}\\
-&\texttt{sin(x) ** sinh(log(x))}
+&\texttt{>>> Expression.fromString('sin x ** sinh log x + 3')}\\
+&\texttt{sin(x) ** sinh(log(x)) + 3}
 \end{align*}
 
 \item \textbf{Negatie} \\
-Het $-$ teken kent een dubbele betekenis. In het geval van \textit{negatie} vervangen we het $-$ teken in onze berekening door een $\sim$ om het voor het vervolgens als een functie beschouwen. 
+Het $-$ teken kent een dubbele betekenis. In het geval van \textit{negatie} vervangen we het $-$ teken in onze berekening door een $\sim$ om het vervolgens als een functie beschouwen. 
 \begin{align*}
 &\texttt{>>> expr =  print(Expression.fromString('-x / y + -sin -x'))}\\
 &\texttt{-x / y + -sin(-x)}\\
-&\texttt{>>> print(expr.evaluate({'x':1.57, 'y':3.14}))}\\
-&\texttt{0.4999996829318346}
+%&\texttt{>>> print(expr.evaluate({'x':1.57, 'y':3.14}))}\\
+%&\texttt{0.4999996829318346}
 \end{align*}
 
 \end{itemize}
 
-\subsection{Extra's}
+\subsection*{Eigen Aanpassingen}
+
 
 \newpage
 \section{Taakverdeling}
