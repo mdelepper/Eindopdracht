@@ -88,6 +88,29 @@ Zoals in het voorgaande stukje te zien is, kunnen we numerieke waarden van expre
 \newpage
 \subsection*{Extra Aanpassingen}
 
+\item \textbf{Expression from String}
+We hebben een functie \textit{post\_tokenize} toegevoegd. Deze maakt het mogelijk om bij het gebruik van \textit{ExpressionfromString} een functie in te voeren zonder *-tekens te gebruiken tussen getallen en variabelen/functies. Zo kan je bijvoorbeeld het volgende doen:
+\begin{align*}
+&\texttt{>>> b = Expression.fromString('3xylog(ab) +5'))}\\
+&\texttt{>>> print(b)}\\
+&\texttt{3 * x * y * log(a * b) + 5}
+\end{align*}
+
+\item \textbf{Gedeeltelijke evaluatie}\\
+Aangezien sommige functies meerdere variabelen gebruiken, willen we het mogelijk maken om een expressie gedeeltelijk te kunnen evalueren. Als we bijvoorbeeld de functie die hierboven staat gedeeltelijk willen evalueren, krijgen we bijv:
+\begin{align*}
+&\texttt{>>> b.evaluate(\{'a':3, 'b':2\})}\\
+&\texttt{'3.0 * x * y * 1.791759469228055 + 5.0'}
+\end{align*}
+
+\item \textbf{Nulpunten vinden}\\
+Het leek ons ook wel mooi om nulpunten te kunnen vinden van (simpele) expressies/functies. Dit hebben we gedaan door middel van het importeren van het programma \textit{bisection}. Dit programma was een inleveropdracht en het leek ons wel mooi om hier iets mee te doen. Hier volgt een klein voorbeeldje:
+\begin{align*}
+&\texttt{b = Expression.fromString('x*x - 4')}\\
+&\texttt{>>> b.findRoots('x', -3, 4, 0.001)}\\
+&\texttt{[-1.99981689453125, 2.00006103515625]}
+\end{align*}
+
 \item \textbf{Bekende en Onbekende Functies - de Unaire Boom} \\
 Om niet alle elementen uit een berekening in een binaire boom te hoeven plaatsen, hebben we de unaire boom geintroduceerd. Dit biedt de mogelijkheid om ook functies in een berekening op te nemen. Deze unaire boom heeft slecht \'e\'en kind, hetgeen de functie evalueert. Dit kind kan zowel een binaire- danwel een unaire boom zijn. Zo is het mogelijk dat berekeningen met functies in functies ge\"evalueerd kunnen worden.
 \begin{align*}
