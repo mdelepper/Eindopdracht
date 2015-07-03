@@ -86,7 +86,7 @@ Om ook variabelen te ondersteunen hebben we een klasse \textit{Variable} geschre
 &\texttt{3.0}\\
 \end{align*}
 
-\subsubsection*{Evaluate}
+\item \textbf{Evaluate}\\
 Zoals in het voorgaande stukje te zien is, kunnen we numerieke waarden van expressies berekenen. Dit doen we door middel van een functie \textit{evaluate}. In \textit{Expressie}, de hoofd-/superklasse van de code, hoeft er nog niks te gebeuren. We gebruiken daarom een \textit{pass} en overloaden de methode in de subklassen van \textit{Expressie}. Zo willen we bijvoorbeeld bij de klasse \textit{BinaryNode}, dat (recursief) de linker- en rechterkant worden ge\"{e}valueerd. Afhankelijk van wat de zogeheten \textit{child} teruggeeft willen we een uiteindelijke waarde of expressie teruggeven aan de oproep. Dit houdt bijvoorbeeld in dat een constante zijn eigen waarde teruggeeft en een variabele \textit{x} geeft \'{o}f \textit{x} terug \'{o}f de waarde die voor \textit{x} is meegegeven in de vorm van een \textit{dictionary}.
 
 
