@@ -55,6 +55,18 @@ Berekening, \textit{Shunting Yard}-algoritme, \textit{stack}, \textit{output}.\\
 De nieuwe klasses 
 
 \subsection{Aanpassingen}
+
+\subsubsection*{Het vertalen van een Expressie naar een string}
+haakjes stukje?
+
+\subsubsection*{Gelijke bomen?}
+We willen twee bomen kunnen vergelijken. Dit doen we door in de verschillende klassen een overload van \textit{def \_\_eq\_\_} te gebruiken. Op deze manier worden de twee expressiebomen vanaf een top-down approach bekeken en vergeleken.
+
+\subsubsection*{De klasse Variable}
+Om ook variabelen te ondersteunen hebben we een klasse \textit{Variable} geschreven. Hierin 
+
+
+
 \subsubsection*{Bekende en Onbekende Functies - de Unaire Boom}
 Om niet alle elementen uit een berekening in een \textit{binaire boom} te hoeven plaatsen, hebben we voor de mogelijkheid om ook \textit{functies} mee te kunnen nemen in een berekening de \textit{unaire boom} geintroduceerd. Deze \textit{unaire boom} heeft slecht \'e\'en kind - hetgeen de functie evalueert - wat op zichzelf weer een \textit{unaire}- danwel een \textit{binaire boom} kan zijn. Dit laat dus toe dat berekeningen van \textit{functies} in \textit{functies} mogelijk zijn.
 \begin{align*}
@@ -84,8 +96,8 @@ Het $-$ teken kent een dubbele betekenis. In het geval van \textit{negatie} verv
     16 juni & Presentatie + Code begrijpen & Presentatie + EvaluateFunction voor alles behalve variabelen & Nieuwe operatoren  $(-, *, /, **$ etc.$)$ \\ \hline
     18 juni & Begin variabelen in de expressieboom & EvaluateFunction afmaken & Reduceren van haakjes \\ \hline
     23 juni & Standaard en onbepaalde functies & Versimpeling en GitHub & Extra omschrijving + GitHub \\ \hline
-    25 juni & Functies afmaken, begin negatie & \texttt{4log(3xy)} is nu \texttt{4*log(3*x*y)} & Versimpeling van de boom en versimpeling van de uitdrukkingen \\ \hline
-    30 juni & Negatie is af en functies zonder haakjes & PEP8 (?) & Versimpelen is nu af \\
+    25 juni & Functies afmaken, begin negatie & \texttt{4log(sin(3xy))} is nu \texttt{4*log(sin(3*x*y))} & Versimpeling van de boom en versimpeling van de uitdrukkingen \\ \hline
+    30 juni & Negatie is af en functies zonder haakjes & Bisection ge\"{i}mporteerd (werkt voor simpele functies) en PEP8 & Versimpelen is nu af \\
     \hline
     \end{tabular}
 \end{center}
