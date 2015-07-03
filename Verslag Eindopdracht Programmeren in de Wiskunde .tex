@@ -50,10 +50,14 @@ Jurriaan \textsc{Parie}  \tab\tab\#3938549
 
 
 \section{De Opdracht}
-We hebben de aangeleverde code aanzienlijk uitgebreid. Naast de lijst met standaard functionaliteiten hebben we ook elementen toegevoegd uit de lijst met Extra mogelijkheden. Daarnaast hebben we nog een aantal (eigen) functies buiten de lijst om toegevoegd. Hieronder worden alle aanpassingen besproken en we lichten per functionaliteit het een en ander toe.
+We hebben de aangeleverde code aanzienlijk uitgebreid. Naast de lijst met standaard functionaliteiten hebben we ook elementen toegevoegd uit de lijst met Extra mogelijkheden. Daarnaast hebben we nog een aantal (eigen) functies buiten de lijst om toegevoegd. Hieronder worden alle aanpassingen besproken en worden alle aanpassingen per stuk toegelicht.
 
 \subsection*{Standaard Aanpassingen}
 \begin{itemize}
+\item \textbf{Aritmetische Operatoren} \\
+We hebben de aangeleverde code waarin het mogelijk is om de operator \texttt{+} uit te voeren dusdanig aangepast dat zodat ook \texttt{-}, \texttt{*}, \texttt{/}, \texttt{**} uitgevoerd kan worden. Hiertoe hebben we in de klasse \texttt{Expression} voor elke operator een nieuwe functie gedefinieerd: \texttt{\_\_sub\_\_}, \texttt{\_\_mul\_\_}, \texttt{\_\_truediv\_\_}, en \texttt{\_\_pow\_\_}. Vervolgens worden deze functies doorverwezen naar de subklassen: \texttt{SubstractNode}, \texttt{MulitplyNode}, \texttt{DivisionNode} en \texttt{PowerNode}. Hier wordt op de meest basale manier de actie bij het tegenkomen van een operator overschreven.
+
+
 \item \textbf{Het vertalen van een Expressie naar een string} \\
 haakjes stukje?
 
@@ -82,14 +86,15 @@ Om ook variabelen te ondersteunen hebben we een klasse \textit{Variable} geschre
 \end{align*}
 
 \item \textbf{Evaluate}\\
-Zoals in het voorgaande stukje te zien is, kunnen we numerieke waarden van expressies berekenen. Dit doen we door middel van een functie \textit{evaluate}. In \textit{Expressie}, de hoofd-/superklasse van de code, hoeft er nog niks te gebeuren. We gebruiken daarom een \textit{pass} en overloaden de methode in de subklassen van \textit{Expressie}. Zo willen we bijvoorbeeld bij de klasse \textit{BinaryNode}, dat (recursief) de linker- en rechterkant worden ge\"{e}valueerd. Afhankelijk van wat de zogeheten \textit{child} teruggeeft willen we een uiteindelijke waarde of expressie teruggeven aan de oproep. Dit houdt bijvoorbeeld in dat een constante zijn eigen waarde teruggeeft en een variabele \textit{x} geeft \'{o}f \textit{x} terug \'{o}f de waarde die voor \textit{x} is meegegeven in de vorm van een \textit{dictionary}.
+In de bovenstaande code is te zien hoe we de numerieke waarde van een expressie kunnen berekenen. Dit doen we door middel van de functie \texttt{evaluate}. In \texttt{Expressie}, de hoofd-/superklasse van de code, hoeft er nog niks te gebeuren. We gebruiken daarom een \texttt{pass} en overloaden de methode in de subklassen van \texttt{Expressie}. Zo willen we bijvoorbeeld bij de klasse \texttt{BinaryNode} dat (recursief) de linker- en rechterkant worden ge\"{e}valueerd. Afhankelijk van wat het zogeheten \textit{child} teruggeeft, willen we een uiteindelijke waarde of expressie teruggeven aan de oproep. Dit houdt bijvoorbeeld in dat een constante zijn eigen waarde teruggeeft en een variabele \texttt{x} geeft \'{o}f \texttt{x} terug \'{o}f de waarde die voor \texttt{x} is meegegeven in de vorm van een \texttt{dictionary}.
+\end{itemize}
+\vspace{2pc}
 
-
-\newpage
 \subsection*{Extra Aanpassingen}
 
-\item \textbf{Expression from String}
-We hebben een functie \textit{post\_tokenize} toegevoegd. Deze maakt het mogelijk om bij het gebruik van \textit{ExpressionfromString} een functie in te voeren zonder *-tekens te gebruiken tussen getallen en variabelen/functies. Zo kan je bijvoorbeeld het volgende doen:
+\begin{itemize}
+\item \textbf{Expression from String}\\
+We hebben een functie \texttt{post\_tokenize} toegevoegd. Deze maakt het mogelijk om bij het gebruik van \texttt{Expression.fromString} een functie in te voeren zonder *-tekens te gebruiken tussen getallen en variabelen/functies. Zo kan je bijvoorbeeld het volgende doen:
 \begin{align*}
 &\texttt{>>> b = Expression.fromString('3xylog(ab) +5'))}\\
 &\texttt{>>> print(b)}\\
@@ -127,6 +132,8 @@ Het $-$ teken kent een dubbele betekenis. In het geval van \textit{negatie} verv
 %&\texttt{0.4999996829318346}
 \end{align*}
 \end{itemize}
+
+\subsubsection*{Eigen Aanpassingen}
 
 \newpage
 \section{Taakverdeling}
