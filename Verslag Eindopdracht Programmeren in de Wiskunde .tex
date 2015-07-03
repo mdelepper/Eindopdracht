@@ -57,11 +57,13 @@ De nieuwe klasses
 
 \subsection{Aanpassingen}
 
-\subsubsection*{Het vertalen van een Expressie naar een string}
+
+\begin{itemize}
+\item \textbf{Het vertalen van een Expressie naar een string} \\
 haakjes stukje?
 
-\subsubsection*{Gelijke bomen?}
-We willen twee bomen kunnen vergelijken. Dit doen we door in de verschillende klassen een overload van \textit{def \_\_eq\_\_} te gebruiken. Op deze manier worden de twee expressiebomen vanaf een top-down approach bekeken en vergeleken.
+\item \textbf{Gelijke bomen} \\
+We willen twee bomen kunnen vergelijken. Dit doen we door in de verschillende klassen een overload van \texttt{def\_\_eq\_\_} te gebruiken. Op deze manier worden de twee expressiebomen vanaf een top-down approach bekeken en vergeleken.
 \begin{align*}
 &\texttt{a = Expression.fromString('3sin(x)'))}\\
 &\texttt{>>> print(a)}\\
@@ -73,8 +75,7 @@ We willen twee bomen kunnen vergelijken. Dit doen we door in de verschillende kl
 &\texttt{False}
 \end{align*}
 
-
-\subsubsection*{De klasse Variable}
+\item \textbf{De klasse Variable} \\
 Om ook variabelen te ondersteunen hebben we een klasse \textit{Variable} geschreven, die een subklasse is van \textit{Constant}. Hierin staat een constructor en een overload van  \textit{def \_\_str\_\_}, die zichzelf als waarde teruggeeft en een overload van \textit{def evaluate}. Als er een waarde is meegegeven voor de variabele, dan willen we deze waarde gebruiken in de berekening. Als dit niet het geval is, dan moet de variabele als variabele worden teruggegeven.
 \begin{align*}
 &\texttt{a = Expression.fromString('3sin(x)'))}\\
@@ -85,14 +86,14 @@ Om ook variabelen te ondersteunen hebben we een klasse \textit{Variable} geschre
 \end{align*}
 
 
-\subsubsection*{Bekende en Onbekende Functies - de Unaire Boom}
+\item \textbf{Bekende en Onbekende Functies - de Unaire Boom} \\
 Om niet alle elementen uit een berekening in een \textit{binaire boom} te hoeven plaatsen, hebben we de \textit{unaire boom} geintroduceerd. Dit biedt de mogelijkheid om ook \textit{functies} in een berekening op te nemen. Deze \textit{unaire boom} heeft slecht \'e\'en kind - hetgeen de functie evalueert - wat op zichzelf weer een \textit{unaire}- danwel een \textit{binaire boom} kan zijn. Dit laat dus toe dat berekeningen van \textit{functies} in \textit{functies} mogelijk zijn.
 \begin{align*}
 &\texttt{>>> Expression.fromString('sin x ** sinh log x')}\\
 &\texttt{sin(x) ** sinh(log(x))}
 \end{align*}
 
-\subsubsection*{Negatie}
+\item \textbf{Negatie} \\
 Het $-$ teken kent een dubbele betekenis. In het geval van \textit{negatie} vervangen we het $-$ teken in onze berekening door een $\sim$ om het voor het vervolgens als een functie beschouwen. 
 \begin{align*}
 &\texttt{>>> expr =  print(Expression.fromString('-x / y + -sin -x'))}\\
@@ -100,6 +101,8 @@ Het $-$ teken kent een dubbele betekenis. In het geval van \textit{negatie} verv
 &\texttt{>>> print(expr.evaluate({'x':1.57, 'y':3.14}))}\\
 &\texttt{0.4999996829318346}
 \end{align*}
+
+\end{itemize}
 
 \subsection{Extra's}
 
